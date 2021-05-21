@@ -1,7 +1,7 @@
 ﻿/**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -76,7 +76,7 @@ Tools.connect = function() {
     self.socket = null;
   }
 
-  this.socket = io.connect(':8080', {
+  this.socket = io.connect('', {
 	"reconnection" : true,
 	"reconnectionDelay": 100, //Make the xhr connections as fast as possible
 	"timeout": 1000 * 60 * 20 // Timeout after 20 minutes
@@ -97,7 +97,7 @@ Tools.connect = function() {
   this.socket.on("broadcast", function (msg) {
 
 	handleMessage(msg);
-	
+
 	if((msg.type=='sync' || msg.subtype=='sync') && Tools.acceptMsgs && !Tools.more){
 		if(Tools.msgs.length>msg.msgCount){
 			var msgs =Tools.msgs.slice(msg.msgCount);
@@ -111,7 +111,7 @@ Tools.connect = function() {
 		loadingEl.classList.add("hidden");
 		loading=false;
 	}
-	
+
   });
 
   this.socket.on("reconnect", function onReconnection() {
@@ -175,7 +175,7 @@ function handleMarker(evt){
 		ptrMessage.data.x = evt.pageX / Tools.getScale(),
 		ptrMessage.data.y = evt.pageY / Tools.getScale(),
 		ptrMessage.data.c = Tools.getColor()
-			
+
 		Tools.socket.emit('broadcast', ptrMessage);
 	}
 	if(Tools.showMarker){
@@ -183,16 +183,16 @@ function handleMarker(evt){
 		ptrMessage.data.y = evt.pageY / Tools.getScale(),
 		moveMarker(ptrMessage.data);
 	}
-	
+
 };
 
 function moveMarker(message) {
 	var cursor = Tools.svg.getElementById("mycursor");
-	if(!cursor){ 
+	if(!cursor){
 		Tools.svg.getElementById("cursors").innerHTML="<circle class='opcursor' id='mycursor' cx='100' cy='100' r='10' fill='#e75480' />";
 		cursor = Tools.svg.getElementById("mycursor");
 	}
-	
+
 	Tools.svg.appendChild(cursor);
 	//cursor.setAttributeNS(null, "r", Tools.getSize());
 	cursor.r.baseVal.value=Tools.getSize()/2;
@@ -200,7 +200,7 @@ function moveMarker(message) {
         cursor.setAttributeNS(null, "cy", message.y-25);
 };
 
-setInterval(function(){ 
+setInterval(function(){
 	for(var i in cursors){
 		if(Date.now()-cursorLastUse[cursors[i].id]>3000 && cursors[i].style.opacity!=.2){
 			$(cursors[i]).fadeTo( 1500, .2 )
@@ -211,7 +211,7 @@ setInterval(function(){
 function movePointer(message) {
 	var cursor = cursors["cursor"+message.socket];
 	//var cursor = document.getElementById("cursor"+message.socket);
-	if(!cursor){ 
+	if(!cursor){
 		var cursorList = Tools.svg.getElementsByClassName("opcursor");
 		//var cursors = document.getElementsByClassName("opcursor");
 		for(var i = 0; i < cursorList.length; i++)
@@ -226,7 +226,7 @@ function movePointer(message) {
 		Tools.svg.getElementById("cursors").innerHTML="<circle class='opcursor' id='cursor"+message.socket+"' cx='0' cy='0' r='10' fill='orange' />";
 		//$(Tools.board).append("<div style='width:20px;height:20px' class='opcursor' id='cursor"+message.socket+"'><svg><circle cx='10' cy='10' r='10' fill='orange'></circle></svg></div>");
 		//cursor = document.getElementById("cursor"+message.socket)
-		
+
 		cursor = Tools.svg.getElementById("cursor"+message.socket);
 		Tools.svg.appendChild(cursor);
 		cursors["cursor"+message.socket]= cursor;
@@ -272,7 +272,7 @@ function updateActivityMonitor(cursor){
 		region[2] = 1;
 		region[0] = 0;
 	}
-	
+
 	if(bounding.left < -20){
 		region[3] = 1;
 		region[1] = 0;
@@ -280,7 +280,7 @@ function updateActivityMonitor(cursor){
 		region[3] = 0;
 		region[1] = 1;
 	}
-	
+
 	if(region[0]+region[1]+region[2]+region[3]) {
 		$(Tools.compass).fadeIn();
 		for(var i = 0; i < 4; i++){
@@ -343,7 +343,7 @@ Tools.HTML = {
 	templateExtra: new Minitpl("#tool-list > .tool-extra"),
 	addTool: function (toolName, toolIcon, toolIconHTML, isExtra, oneTouch, menu) {
 		var callback;
-		
+
 		if(oneTouch){
 			callback = function (evt) {
 				Tools.onClick(toolName,evt);
@@ -363,9 +363,9 @@ Tools.HTML = {
 			if(oneTouch) elem.classList.add("oneTouch");
 			if(menu) {
 				Tools.menus[toolName]={};
-				var container = `<div class="popover menu fade show bs-popover-right" 
-					id="popover-` + toolName + `" 
-					x-placement="right" 
+				var container = `<div class="popover menu fade show bs-popover-right"
+					id="popover-` + toolName + `"
+					x-placement="right"
 					style="position: fixed; display:none; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 0px, 0px);">` +
 						(menu.title?`<h3 class="popover-header">` + menu.title + `</h3>`:``) +
 						`<div class="popover-body">`
@@ -375,7 +375,7 @@ Tools.HTML = {
 				document.getElementById("template").innerHTML = container;
 				Tools.menus[toolName].menu = document.getElementById("popover-"+toolName);
 				document.body.appendChild(Tools.menus[toolName].menu);
-				
+
 				 (function(){
 
 					var hidden = true;
@@ -392,7 +392,7 @@ Tools.HTML = {
 								);
 								document.removeEventListener("mousedown", listen, true);
 								document.removeEventListener("touchstart", listen, true);
-							
+
 						}else{
 							var scrollTop = document.getElementById("menu").scrollTop;
 							Tools.menus[toolName].y = Math.max(10, $(elem).position().top +scrollTop -  ($(Tools.menus[toolName].menu).height()>60?10:-9));
@@ -423,7 +423,7 @@ Tools.HTML = {
 			 		var listen  = function(e) {
 						 var onButton = true;
 						 var onMenu = true;
-						if (e.target.id != elem.id && !$(elem).find(e.target).length) 
+						if (e.target.id != elem.id && !$(elem).find(e.target).length)
 							onButton = false;
 						if(!(e.target.id && e.target.id == 'popover-'+toolName) && !$('#popover-'+toolName).find(e.target).length)
 							onMenu = false;
@@ -504,9 +504,9 @@ Tools.add = function (newTool) {
 	}
 
 	//Add the tool to the GUI
-	Tools.HTML.addTool(newTool.name, 
-		newTool.icon, 
-		newTool.iconHTML, 
+	Tools.HTML.addTool(newTool.name,
+		newTool.icon,
+		newTool.iconHTML,
 		newTool.isExtra,
 		newTool.oneTouch,
 		newTool.menu);
@@ -533,7 +533,7 @@ Tools.onClick = function (toolName,evt) {
 
 	//Do something with the GUI
 
-	//Call the start callback of the new tool 
+	//Call the start callback of the new tool
 	tool.onstart(evt);
 };
 
@@ -580,7 +580,7 @@ Tools.change = function (toolName) {
 		Tools.svg.addEventListener(event, listener, { 'passive': false });
 	}
 
-	//Call the start callback of the new tool 
+	//Call the start callback of the new tool
 	newtool.onstart(Tools.curTool);
 	Tools.curTool = newtool;
 };
@@ -611,7 +611,7 @@ Tools.send = function (data, toolName) {
 		}
 		Tools.msgs.push(message.data);
 	}
-	
+
 };
 
 Tools.drawAndSend = function (data) {
@@ -716,7 +716,7 @@ window.addEventListener("focus", function () {
 });
 
 function updateDocumentTitle() {
-	
+
 }
 
 (function () {
@@ -791,7 +791,7 @@ Tools.setScale = function setScale(scale) {
 	//Tools.svg.style.transform = 'scale(' + scale + ')';
 	//svg.setAttributeNS(null, "width", svgWidth * percent);
 	//svg.setAttributeNS(null, "height", svgHeight * percent);
-	
+
     Tools.svg.width.baseVal.value = svgWidth*scale;// Tools.svg.width.baseVal.value/scale;
 	Tools.svg.height.baseVal.value = svgHeight*scale;//Tools.svg.height.baseVal.value/scale;
 	//Tools.svg.style.width = svgWidth*scale;// Tools.svg.width.baseVal.value/scale;
@@ -801,7 +801,7 @@ Tools.setScale = function setScale(scale) {
 	scaleTimeout = setTimeout(function () {
 		Tools.svg.style.willChange = 'auto';
 	}, 1000);
-	Tools.scale = scale; 
+	Tools.scale = scale;
 	return scale;
 }
 Tools.getScale = function getScale() {
@@ -892,7 +892,7 @@ Tools.applyShortcuts = function(shortcuts,toolName){
 		}
 		window.addEventListener("keydown", function (e) {
 			for(var i = 0; i < Tools.shortcuts.changeToolList.length; i++){
-				if (e.key === Tools.shortcuts.changeToolList[i].key 
+				if (e.key === Tools.shortcuts.changeToolList[i].key
 					&& !$(e.target).is("textarea,input[type=text]")
 					&& !$(e.target).is($(".CodeMirror"))
 					&& !$(e.target).is($(".CodeMirror").find("*"))
@@ -911,7 +911,7 @@ Tools.applyShortcuts = function(shortcuts,toolName){
 				}else{
 					key = keys[0];
 				}
-				if (pass && e.key === key 
+				if (pass && e.key === key
 					&& !$(e.target).is("textarea,input[type=text]")
 					&& !$(e.target).is($(".CodeMirror"))
 					&& !$(e.target).is($(".CodeMirror").find("*"))
@@ -921,7 +921,7 @@ Tools.applyShortcuts = function(shortcuts,toolName){
 				}
 			}
 		})
-		
+
 		shortcutsInit = true;
 	}
 	if(shortcuts.changeTool)
@@ -966,9 +966,9 @@ Tools.positionElement = function (elem, x, y) {
 };
 
 Tools.getMarkerBoundingRect = function(el,r,m){
-	var marker = el.getAttributeNS(null,"marker-end");		
+	var marker = el.getAttributeNS(null,"marker-end");
 	if(marker && marker.split("_")[0]=="url(#arrw"){
-		
+
 		var x = el.x1.baseVal.value;
 		var x2 = el.x2.baseVal.value;
 		var y = el.y1.baseVal.value;
@@ -977,7 +977,7 @@ Tools.getMarkerBoundingRect = function(el,r,m){
 		var strokeWidth = (el.getAttributeNS(null,"stroke-width") || 0);
 
 		var rad = Math.atan2(y2 - y, x2 - x);
-	  
+
 		var l = 6*strokeWidth;
 		var h = 2*strokeWidth;
 
@@ -1052,16 +1052,16 @@ Tools.decomposeMatrix = function(mat) {
 	var d = mat.d;
 	var e = mat.e;
 	var f = mat.f;
-  
+
 	var delta = a * d - b * c;
-  
+
 	let result = {
 	  translation: [e, f],
 	  rotation: 0,
 	  scale: [0, 0],
 	  skew: [0, 0],
 	};
-  
+
 	// Apply the QR-like decomposition.
 	if (a != 0 || b != 0) {
 	  var r = Math.sqrt(a * a + b * b);
@@ -1158,7 +1158,7 @@ Tools.i18n = (function i18n() {
 		}
 	};
 })();
-	
+
 
 function resize_view(){
 	//Scale the canvas on load
@@ -1177,12 +1177,12 @@ $(document).ready(function(){
 	var coords = window.location.hash.slice(1).split(',');
 	var x = coords[0] | 0;
 	var y = coords[1] | 0;
-	
+
 	var hash = '#' + (x | 0) + ',' + (y | 0) + ',' + scale;
 	window.history.pushState({}, "", hash);
-	
-		
-	 
+
+
+
 	});
 });
 resize_view();
