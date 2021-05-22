@@ -28,7 +28,7 @@
 	//Indicates the id of the shape the user is currently drawing or an empty string while the user is not drawing
 	var ellipse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;"><g><path id="submenu-rect-path" fill="';
 	var ellipse2 = '" d="M435.204,126.967C387.398,94.1,324.11,76,257,76c-67.206,0-130.824,18.084-179.138,50.922C27.652,161.048,0,206.889,0,256c0,49.111,27.652,94.952,77.862,129.078C126.176,417.916,189.794,436,257,436c67.11,0,130.398-18.1,178.204-50.967C484.727,350.986,512,305.161,512,256S484.727,161.014,435.204,126.967z M418.208,360.312C375.354,389.774,318.103,406,257,406 c-61.254,0-118.884-16.242-162.273-45.733C52.986,331.898,30,294.868,30,256s22.986-75.898,64.727-104.267C138.116,122.242,195.746,106,257,106c61.103,0,118.354,16.226,161.208,45.688C459.345,179.97,482,217.015,482,256S459.345,332.03,418.208,360.312z"/></g></svg>';
-		
+
 	 var icons = {
 			"Rectangle":{
 				icon:"▢",
@@ -48,7 +48,7 @@
 				isSVG:true
 			}
 	 };
-	
+
 	var curshape="Rectangle",
 	end=false,
 	curId = "",
@@ -96,7 +96,7 @@
 			if (performance.now() - lastTime > 70 || end) {
 				Tools.drawAndSend(curUpdate);
 				lastTime = performance.now();
-			
+
 				if(wb_comp.list["Measurement"]){
 					wb_comp.list["Measurement"].update(
 						{type:curshape,
@@ -140,7 +140,7 @@
 						}
 					}
 				};
-				
+
 				if(data.shape=="Circle"){
 					updateCircle(shape, data);
 				}else if(data.shape=="Ellipse"){
@@ -158,7 +158,7 @@
 	var svg = Tools.svg;
 	function createShape(data) {
 		//Creates a new shape on the canvas, or update a shape that already exists with new information
-		var shape = svg.getElementById(data.id); 
+		var shape = svg.getElementById(data.id);
 		if(data.shape=="Circle"){
 			if(!shape) shape = Tools.createSVGElement("circle");
 			updateCircle(shape, data);
@@ -196,7 +196,7 @@
 			shape.setAttribute("transform",data.transform);
 	}
 
-	function updateCircle(shape, data) {		
+	function updateCircle(shape, data) {
 		shape.cx.baseVal.value = Math.round((data['x2'] + data['x'])/2);
 		shape.cy.baseVal.value = Math.round((data['y2'] + data['y'])/2);
 		shape.r.baseVal.value = Math.max(1,Math.round(Math.sqrt(Math.pow(data['x2'] - data['x'],2)+Math.pow(data['y2'] - data['y'],2))/2));
@@ -208,7 +208,7 @@
 			shape.setAttribute("transform",data.transform);
 	}
 
-	function updateEllipse(shape, data) {		
+	function updateEllipse(shape, data) {
 		shape.cx.baseVal.value = Math.round((data['x2'] + data['x'])/2);
 		shape.cy.baseVal.value = Math.round((data['y2'] + data['y'])/2);
 		shape.rx.baseVal.value = Math.max(1,Math.abs(Math.round((data['x2'] - data['x'])/2)));
@@ -229,7 +229,7 @@
 		}
 		if(!menuInitialized)initMenu(elem);
 	};
-	
+
 
 	var menuInitialized = false;
 	var menuShape = "Circle";
@@ -284,7 +284,7 @@
 		btn.style.backgroundColor = "#eeeeff";
 		btn.style.color = "green";
 		btn.style.borderRadius = "8px";
-		
+
 	};
 
 	function dashedClicked(){
@@ -326,14 +326,8 @@
 			"content": `<div class="tool-extra submenu-rect" id="submenu-rect-Rectangle">
 							<span title = "rectangle" class="tool-icon">▢</span>
 						</div>
-						<div class="tool-extra submenu-rect" id="submenu-rect-Circle">
-							<span title = "circle" class="tool-icon">◯</span>
-						</div>
 						<div class="tool-extra submenu-rect" id="submenu-rect-Ellipse">
 							<span title = "ellipse" class="tool-icon">` + icons["Ellipse"].icon + `</span>
-						</div>
-						<div style="width:143px;display:block" class="tool-extra"  id="submenu-rect-dashed">
-							<div style="margin-top:5px;padding:5px;font-size:.8rem;color: gray"><i style="font-size:.8rem;margin-left:5px" id="rect-dashed" class="far fa-square"></i> &nbsp;dashed</div>
 						</div>`,
 			"listener": menuListener
 		},

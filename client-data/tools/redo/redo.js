@@ -1,7 +1,7 @@
 ﻿/**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -52,8 +52,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Redo",
-		"icon": "🗑",
-		"iconHTML":"<i style='color: #3D9970;margin-top:7px' class='fas fa-redo-alt'></i>",
+		"icon": "⟳",
 		"shortcuts": {
             "actions":[{"key":"shift-R","action":redo}]
         },
@@ -61,7 +60,7 @@
 			"press": redo
 		},
 		"draw": draw,
-		"isExtra":true,
+		"isExtra":false,
 		"oneTouch":true,
 		"onstart":redo,
 		"mouseCursor": "crosshair",

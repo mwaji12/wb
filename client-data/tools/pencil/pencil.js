@@ -30,7 +30,7 @@
 	var curLineId = "",
 		startX=0,
 		startY=0,
-		penIcons = ["✏","W"],
+		penIcons = ["🖊️","W"],
 		lastTime = performance.now(), //The time at which the last point was drawn
 		end=false;
 	var curPen = {
@@ -213,7 +213,7 @@
 							cy2 = prev_y + dist2 * vecty; //Second control point
 						prev_values[2] = cx1;
 						prev_values[3] = cy1;
-						
+
 						npoint = {
 							type: "C", values: [
 								cx2, cy2,
@@ -251,6 +251,7 @@
 
 
 	function toggle(elem){
+		return
 		var index = 0;
 		if(curPen.mode=="Pencil"){
 			curPen.mode="White out"
@@ -273,7 +274,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Pencil",
-		 "icon": "✏",
+		"icon": penIcons[0],
 		"name": "Pencil",
 		"title":"Pencil",
 		"listeners": {

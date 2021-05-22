@@ -1,7 +1,7 @@
 ﻿/**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -26,7 +26,7 @@
 
 (function grid() { //Code isolation
 
-	var toggle=1; //grid on by default
+	var toggle=0; //grid on by default
 	var msg = {
 		"type": "grid",
 		"id":"",

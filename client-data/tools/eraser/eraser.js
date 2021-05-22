@@ -1,7 +1,7 @@
 /**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -28,10 +28,10 @@
 
 	var erasing = false;
 
-	
+
 	var currShape = null;
 	var curTool = "single";
-	var icons = ["<i style='color: #e75480;margin-top:7px' class='fas fa-skull-crossbones'></i>","<i style='color: black;margin-top:7px' class='fas fa-skull-crossbones'></i>",];
+	var icons = ["<i style='margin-top:7px' class='fas fa-eraser'></i>","<i style='color: black;margin-top:7px' class='fas fa-skull-crossbones'></i>",];
 	var end = false;
 	var lastTime = performance.now(); //The time at which the last point was drawn
 	var makeRect = false;
@@ -49,20 +49,20 @@
 		evt.preventDefault();
 		if(curTool=="multi"){
 			var shape  = Tools.createSVGElement("rect");
-				
+
 			shape.id = "erase-rect";
-			
+
 			shape.setAttribute("stroke", "red");
 			shape.setAttribute("fill", "gray");
 			shape.setAttribute("stroke-width",1);
 			shape.setAttribute("fill-opacity",.1);
-			
+
 			Tools.svg.appendChild(shape);
 			if(!textElem){
 				textElem = Tools.createSVGElement("text");
 				textElem.setAttribute("x", -1000);
 				textElem.setAttribute("y", 100);
-				
+
 				textElem.setAttribute("font-size", 32);
 				textElem.setAttribute("fill", "black");
 				textElem.setAttribute("opacity",.1);
@@ -76,7 +76,7 @@
 			erasing = true;
 			erase(x, y, evt);
 		}
-		
+
 	}
 
 
@@ -89,7 +89,7 @@
 				end=true;
 				erase(x, y);
 				end=false;
-				var shape = svg.getElementById("erase-rect");	
+				var shape = svg.getElementById("erase-rect");
 				shape.remove();
 				textElem.setAttribute("x", -1000);
 				textElem.setAttribute("y", 100);
@@ -115,14 +115,14 @@
 					msg.id = [];
 					for(var i = 0;i<targets.length;i++){
 						msg.id.push(targets[i].id);
-						
+
 					};
 					Tools.drawAndSend(msg);
 				}
 			}
 		}else{
 			erasing = false;
-			
+
 		}
 	}
 
@@ -138,7 +138,7 @@
 	}
 
 
-	
+
 	function erase(x, y, evt) {
 		if (evt) evt.preventDefault();
 		if(curTool=="multi"){
@@ -268,7 +268,7 @@
 
 		if( (x1 <= x+r && x1 >= x-r) || (x2  <= x+r && x2 >= x-r) ){ //within x range
 			if( (y1 <= y+r && y1 >= y-r) || (y2  <= y+r && y2 >= y-r) ){ //within y range
-				
+
 				var A = x - x1;
 				var B = y - y1;
 				var C = x - x2;
@@ -280,15 +280,15 @@
 
 				var E = x2 - x1;
 				var F = y2 - y1;
-			
+
 				var dot = A * E + B * F;
 				var len_sq = E * E + F * F;
 				var param = -1;
 				if (len_sq != 0) //in case of 0 length line
 					param = dot / len_sq;
-			
+
 				var xx, yy;
-			
+
 				if (param < 0) {
 				xx = x1;
 				yy = y1;
@@ -301,12 +301,12 @@
 				xx = x1 + param * E;
 				yy = y1 + param * F;
 				}
-			
+
 				var dx = x - xx;
 				var dy = y - yy;
-				
+
 				if( dx * dx + dy * dy <= r * r){
-					if( xx <= Math.max(x1,x2) && xx >= Math.min(x1,x2) && 
+					if( xx <= Math.max(x1,x2) && xx >= Math.min(x1,x2) &&
 						yy <= Math.max(y1,y2) && yy >= Math.min(y1,y2)){
 							return true;
 					}
@@ -315,7 +315,7 @@
 		}
 		return false;
 	  }
-	
+
 	//Figure out if you should delete an object based upon whether the particular x,y coordinate of the object is in a valid masking region
 	function shouldDelete(x,y,layer){
 		for (var id in Tools.eraserCache) {
@@ -342,6 +342,7 @@
 	var svg = Tools.svg;
 
 	function toggle(elem){
+		return
 		var index = 0;
 		if(curTool=="single"){
 			curTool="multi";
@@ -354,8 +355,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Remove",
-		"icon": "?",
-		"iconHTML":icons[0],
+		"icon": "❌",
 		//"shortcut": "e",
 		"toggle":toggle,
 		"listeners": {

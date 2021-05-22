@@ -4,12 +4,12 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, user-scalable=no" />
-	<title>LCFPrepBoard</title>
-	
+	<title>Whiteboard</title>
+
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
- 
+
   	<link rel="stylesheet" type="text/css" href="board.css" />
 	<script src="https://kit.fontawesome.com/0166a4ad2b.js" crossorigin="anonymous"></script>
 	<script src="socket.io.js"></script>
@@ -32,10 +32,10 @@
 <body>
 	<script>
 		$(window).on("load", function() {
-			init();
+			//init();
 		});
 		$(document).ready(function(){
-  			$('[data-toggle="tooltip"]').tooltip();   
+  			$('[data-toggle="tooltip"]').tooltip();
 		});
 		document.addEventListener('touchmove', function (event) {
   			if (event.scale !== 1) { event.preventDefault(); }
@@ -43,7 +43,7 @@
 	</script>
 	<div id="loadingMessage">Loading</div>
 	<div id="overlay"></div>
-	<div style='display:none' id="msr-pod-up"><i class="fas fa-angle-double-up"></i></div>
+	<div style='display:none' id="msr-pod-up"><i class="fas fa-angle-double-up"  style="display: none"></i></div>
 	<div style='display:none' id="msr-dialog" class="msr-dialog">
 		<div id="msr-pod"><span id="msr-header">Geometry</span><i style="float:right;color:gray;margin:5px 10px 0px 0px" class="fas fa-angle-double-down"></i></div>
 		<div id="msr-main"><br>Ready</div>
@@ -54,12 +54,12 @@
 	<div id="usercount"></div>
 	<div id="compass">
 		<div id="north" class='direction'><i class="fas fa-chevron-up"></i></div>
-		<div id="west" class='direction'><i class="fas fa-chevron-left"></i></div>	
+		<div id="west" class='direction'><i class="fas fa-chevron-left"></i></div>
 		<div id="east" class='direction'><i class="fas fa-chevron-right"></i></div>
 		<div id="south" class='direction'><i class="fas fa-chevron-down"></i></div>
 	</div>
 <div id="board">
-		
+
 		<svg id="canvas"  width="500" height="500" viewBox= "0 0 500 500" + svgHeightversion="1.1" xmlns="http://www.w3.org/2000/svg" >
 			 <defs id="defs">
       				<pattern id="smallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
@@ -70,10 +70,10 @@
         				<path d="M 300 0 L 0 0 0 300" fill="none" stroke="gray" stroke-width="1"/>
       				</pattern>
     			</defs>
-    			<rect onmousedown="mouser.unregisterShapes()" style="display:block" id="rect_1" width="100%" height="100%" fill="url(#grid)" />
+    			<rect onmousedown="mouser.unregisterShapes()" style="display:block" id="rect_1" width="100%" height="100%" fill="white" />
 				<g id="cursors"></g>
 			<g id="layer-1"></g>
-			
+
 		</svg>
 	</div>
 	<div class="window" id="calc-container" style="display:none">
@@ -95,17 +95,17 @@
 		</div>
 		<div id="wb-editor-container-modes">
 			<button class="wb-button wb-mode-button"  id="wb-close-options" type="button"><i class="fas fa-angle-double-up" aria-hidden="true"></i></button>
-			<button class="wb-editor-mode" id="wb-text"  data-toggle="tooltip" data-trigger="hover"  title="Text editor" type="button">text</button> 
-			<button class="wb-editor-mode" id="wb-js"  data-toggle="tooltip" data-trigger="hover"  title="Javascript compiler/editor" type="button">js</button> 
-			<button class="wb-editor-mode" id="wb-python"  data-toggle="tooltip" data-trigger="hover"  title="Python compiler/editor" type="button">py</button> 
-			<button class="wb-editor-mode" id="wb-cpp"  data-toggle="tooltip" data-trigger="hover"  title="C++ compiler/Editor" type="button">c++</button> 
+			<button class="wb-editor-mode" id="wb-text"  data-toggle="tooltip" data-trigger="hover"  title="Text editor" type="button">text</button>
+			<button class="wb-editor-mode" id="wb-js"  data-toggle="tooltip" data-trigger="hover"  title="Javascript compiler/editor" type="button">js</button>
+			<button class="wb-editor-mode" id="wb-python"  data-toggle="tooltip" data-trigger="hover"  title="Python compiler/editor" type="button">py</button>
+			<button class="wb-editor-mode" id="wb-cpp"  data-toggle="tooltip" data-trigger="hover"  title="C++ compiler/Editor" type="button">c++</button>
 		</div>
 		<div id="wb-editor-container-toolbar">
 			<button class="wb-button wb-edit-button" id="wb-close-edit" type="button"><i class="fas fa-angle-double-up" aria-hidden="true"></i></button>
-			<button class="wb-button wb-edit-button" id="wb-spell-check"  data-toggle="tooltip" data-trigger="hover"  title="Check spelling" type="button"><i id="wb-editor-spell-check-icon" class="fas fa-spell-check"></i></button>  
+			<button class="wb-button wb-edit-button" id="wb-spell-check"  data-toggle="tooltip" data-trigger="hover"  title="Check spelling" type="button"><i id="wb-editor-spell-check-icon" class="fas fa-spell-check"></i></button>
 			<button class="wb-button wb-edit-button" id="wb-code-template"  data-toggle="tooltip" data-trigger="hover"  title="Code template" type="button"><i class="fa fa-file-code-o"></i></button>
-			<button class="wb-button wb-edit-button" id="wb-ed-undo"  data-toggle="tooltip" data-trigger="hover"  title="Undo" type="button"><i class="fas fa-undo"></i></button>  
-			<button class="wb-button wb-edit-button" id="wb-ed-redo"  data-toggle="tooltip" data-trigger="hover"  title="Redo" type="button"><i class="fas fa-redo"></i></button>  
+			<button class="wb-button wb-edit-button" id="wb-ed-undo"  data-toggle="tooltip" data-trigger="hover"  title="Undo" type="button"><i class="fas fa-undo"></i></button>
+			<button class="wb-button wb-edit-button" id="wb-ed-redo"  data-toggle="tooltip" data-trigger="hover"  title="Redo" type="button"><i class="fas fa-redo"></i></button>
 		</div>
 	  <div id="wb-editor">
 		<div class="row wb-editor">
@@ -117,7 +117,7 @@
 	<!-- Modal -->
 	<div class="modal fade" id="myModal" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
-		
+
 		  <!-- Modal content-->
 		  <div class="modal-content">
 			<div class="modal-header wb-modal-header">
@@ -132,7 +132,7 @@
 			  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 			</div>
 		  </div>
-		  
+
 		</div>
 	  </div>
 	<div id="menu" class="menu">
@@ -141,9 +141,18 @@
 				<li class="tool"><span class="tool-icon"></span></li>
 			</ul>
 
+			<ul class="tools">
+				<li class="tool">
+					<span class="tool-icon">
+						<input type="color" style="margin-top:8px" id="chooseColor" value="#1913B0" />
+					</span>
+				</li>
+			</ul>
+
+
 			<ul class="tools" id="settings">
-		
-				<li class="tool-popout">
+
+				<li class="tool-popout" style="display:none">
 					<span style="outline:none !important" class="tool-icon-popout" tabindex=1  data-toggle="popover"  data-content="Some content inside the popover">
 						<i style='color: #0074D9;margin-top:7px' class='fas fa-angle-double-right'></i>
 					</span>
@@ -151,24 +160,18 @@
 						<div class="tool-extra"><span class="tool-icon"></span></div>
 					</span>
 				</li>
-				<li class="tool">
-					<span class="tool-icon" >
-						<input type="color" style="margin-top:8px" id="chooseColor" value="#1913B0" />
-					</span>
-					<label class="tool-name" for="chooseColor">Color</label>
-					
-				</li>
-				<li class="tool">
+
+				<li class="tool expandable">
 					<span class="tool-icon">
 						<svg viewBox="-60 -70 120 120">
 							<circle id="sizeIndicator" cx=0 cy=0 r=10 /></svg>
 					</span>
 					<label class="tool-name slider" for="chooseSize">
 						<span>Size</span>
-						<input type="range" id="chooseSize" value="3" min="1" max="50" step="1" class="rangeChooser" />
+						<input type="range" id="chooseSize" value="2" min="1" max="50" step="1" class="rangeChooser" />
 					</label>
 				</li>
-				<li class="tool">
+				<li class="tool" style="display: none">
 					<span class="tool-icon">
 						<svg viewBox="0 0 8 8">
 							<pattern id="opacityPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
@@ -190,7 +193,7 @@
 		</div>
 	</div>
 	<div id="template" style="display:none;"></div>
-	
+
 	<script type="application/json" id="translations">{}</script>
 	<script src="js/path-data-polyfill.js"></script>
 	<script src="js/minitpl.js"></script>
@@ -198,67 +201,12 @@
 	<script src="tools/pencil/pencil.js"></script>
 	<script src="tools/line/line.js"></script>
 	<script src="tools/rect/rect.js"></script>
-	<script src="tools/text/text.js"></script>
 	<script src="tools/eraser/eraser.js"></script>
-
-	<!-- BEGIN TRANSFORM TOOL -->
-	<!-- Transform dep: 2D -->
-	<script src="js/2D.js"></script>
-	<script src="js/Init2D.js"></script>
-	<script src="tools/transform/transform.js"></script>
-	<!-- END TRANSFORM TOOL -->
-
-	<script src="tools/document/document.js"></script>
-
-	<!-- BEGIN EDITOR TOOL -->
- 	<!-- Editor dep: CodeMirror --> 
-	 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.min.js"></script>
-	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.min.css" />
-	 
-	 <!-- Editor dep: Typo -->
-	 <script src="https://rawgit.com/cfinke/Typo.js/master/typo/typo.js"></script>
-
-	<!-- Editor dep: Klipse -->
-	<script>
-		window.klipse_settings = {
-		  	selector_eval_python_client: 'no_element',
-		};
-	</script>
-	<script src="js/klipse_plugin.min.js"></script>
-
-	<!-- Editor dep: Firebase/Firepad -->
-	<script>
-		var firepad_config = {
-			apiKey: '<API_KEY>',
-			authDomain: "<AUTH_DOMAIN>.firebaseapp.com",
-        		databaseURL: 'https://<DATABASE_NAME>.firebaseio.com'
-		};
-	</script>
-	<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
-	<link rel="stylesheet" href="https://firepad.io/releases/v1.5.9/firepad.css" />
-	<script src="https://firepad.io/releases/v1.5.9/firepad.min.js"></script>
-
-	<!-- Editor -->
-	<script src="tools/editor/editor.js"></script>
-	<!-- END EDITOR TOOL-->
-
 	<script src="tools/hand/hand.js"></script>
-	<script src="tools/grid/grid.js"></script>
 	<script src="tools/clear/clear.js"></script>
-	<script src="tools/eraser2/eraser2.js"></script>
-
-	<!-- BEGIN CALCULATOR TOOL-->
-	<!-- Calculator dep: Desmos-->
-	<script src="https://www.desmos.com/api/v1.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
-	
-	<script src="tools/calculator/calculator.js"></script>
-	<!-- END CALCULATOR TOOL-->
-
 	<script src="tools/undo/undo.js"></script>
 	<script src="tools/redo/redo.js"></script>
-	<script src="tools/zoom-in/zoom-in.js"></script>
-	<script src="tools/zoom-out/zoom-out.js"></script>
-	<script src="components/measurement/measurement.js"></script>
+
 	<script src="js/canvascolor/canvascolor.min.js"></script>
 
 </body>

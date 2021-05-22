@@ -1,7 +1,7 @@
 ﻿/**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -26,7 +26,7 @@
 
 (function measurement() { //Code isolation
 
-	var open=false; //grid on by default
+	var open=true; //grid on by default
 	var curobj;
 	var size=0;
 
@@ -39,7 +39,7 @@
 
 	function update(obj){
 		if(!open)return;
-		updateHTML(elemHTML(obj));	
+		updateHTML(elemHTML(obj));
 	}
 
 	function resize(sz){
@@ -60,26 +60,26 @@
 			elem:elem
 		};
 		switch ( svgType ) {
-			case "group": 
+			case "group":
 				curobj.type="Group";
 				curobj.x=shape.points[0].x;
 				curobj.y=shape.points[0].y;
 				curobj.x2=shape.points[2].x;
-				curobj.y2=shape.points[2].y;  
+				curobj.y2=shape.points[2].y;
 				break;
-			case "text": 
+			case "text":
 				curobj.type="Rectangle";
 				curobj.x = elem.getAttributeNS(null,"x")-0;
 				curobj.y =  elem.getAttributeNS(null,"y")-0;
 				curobj.x2 = curobj.x + elem.getComputedTextLength();
 				curobj.y2 = curobj.y +  (elem.getAttributeNS(null,"font-size")-0);
 				break;
-			case "rect": 
+			case "rect":
 				curobj.type="Rectangle";
 				curobj.x=elem.x.baseVal.value;
 				curobj.y=elem.y.baseVal.value;
 				curobj.x2=elem.x.baseVal.value+elem.width.baseVal.value;
-				curobj.y2=elem.y.baseVal.value+elem.height.baseVal.value;  
+				curobj.y2=elem.y.baseVal.value+elem.height.baseVal.value;
 				break;
 			case "polyline":
 				var pts = elem.getAttributeNS(null,"points").split(/[\s,]+/);
@@ -94,28 +94,28 @@
 				curobj.x2 = curobj.x + (curobj.x2-curobj.x)*r;
 				curobj.y2 = curobj.y + (curobj.y2-curobj.y)*r;
 				break;
-			case "line": 
+			case "line":
 				curobj.type="line";
 				curobj.x=elem.x1.baseVal.value;
 				curobj.y=elem.y1.baseVal.value;
 				curobj.x2=elem.x2.baseVal.value;
-				curobj.y2=elem.y2.baseVal.value;  
+				curobj.y2=elem.y2.baseVal.value;
 				break;
-			case "circle":  
+			case "circle":
 				curobj.type="Circle";
 				curobj.x = elem.cx.baseVal.value-elem.r.baseVal.value;
 				curobj.y = elem.cy.baseVal.value;
 				curobj.x2 = elem.cx.baseVal.value+elem.r.baseVal.value;
 				curobj.y2 =  elem.cy.baseVal.value;
 				break;
-			case "ellipse":  
+			case "ellipse":
 				curobj.type="Ellipse";
 				curobj.x = elem.cx.baseVal.value-elem.rx.baseVal.value;
 				curobj.y = elem.cy.baseVal.value-elem.ry.baseVal.value;
 				curobj.x2 = elem.cx.baseVal.value+elem.rx.baseVal.value;
 				curobj.y2 =  elem.cy.baseVal.value+elem.ry.baseVal.value;
 				break;
-			case "image":  
+			case "image":
 				curobj.type="Rectangle";
 				curobj.x = elem.x.baseVal.value;
 				curobj.y = elem.y.baseVal.value;
@@ -136,7 +136,7 @@
 				break;
 			default:
 				return;
-		}	
+		}
 		updateTransform();
 	}
 
@@ -181,19 +181,19 @@
 		var html="";
 		if(obj.type == "pointer"){
 			html =
-				"<br><span>x:" + Math.round(obj.x) 
-				+ " &nbsp;y:" + Math.round(obj.y) 
+				"<br><span>x:" + Math.round(obj.x)
+				+ " &nbsp;y:" + Math.round(obj.y)
 				+ "</span>";
 		}
 		if(obj.type == "line"){
 			var angle =  Math.round(Math.atan(Math.abs((obj.y-obj.y2)/(obj.x-obj.x2)))*180/Math.PI);
 			if(isNaN(angle))angle = 0;
 			html =
-				"<span>x:" + Math.round(obj.x2) 
-				+ " &nbsp;y:" + Math.round(obj.y2) 
-				+ "<br>x2:" + Math.round(obj.x)  
-				+ " &nbsp;y2:" + Math.round(obj.y)  
-				+ "<br>angle: " + angle 
+				"<span>x:" + Math.round(obj.x2)
+				+ " &nbsp;y:" + Math.round(obj.y2)
+				+ "<br>x2:" + Math.round(obj.x)
+				+ " &nbsp;y2:" + Math.round(obj.y)
+				+ "<br>angle: " + angle
 				+ "°<br>length: " + Math.round(Math.sqrt((obj.y-obj.y2)*(obj.y-obj.y2)+(obj.x-obj.x2)*(obj.x-obj.x2))) + "</span>";
 		}
 		if(obj.type == "Path"){
@@ -202,17 +202,17 @@
 		}
 		if(obj.type == "Rectangle"){
 				html =
-					"<span>x:" + Math.round(obj.x) 
-					+ " &nbsp;y:" + Math.round(obj.y) 
-					+ "<br>x2:" + Math.round(obj.x2)  
-					+ " &nbsp;y2:" + Math.round(obj.y2) 
+					"<span>x:" + Math.round(obj.x)
+					+ " &nbsp;y:" + Math.round(obj.y)
+					+ "<br>x2:" + Math.round(obj.x2)
+					+ " &nbsp;y2:" + Math.round(obj.y2)
 					+ "<br>width: " + Math.abs(Math.round(obj.x-obj.x2))
 					+ "<br>height: " + Math.abs(Math.round(obj.y-obj.y2)) + "</span>";
 		}
 		if(obj.type == "Circle"){
 			html =
-				"<span><br>ctr: (" + Math.round((obj.x+obj.x2)/2) 
-				+ "," +  Math.round((obj.y+obj.y2)/2) 
+				"<span><br>ctr: (" + Math.round((obj.x+obj.x2)/2)
+				+ "," +  Math.round((obj.y+obj.y2)/2)
 				+ ")<br>radius: " + Math.max(1,Math.round(Math.sqrt(Math.pow(obj.x2 - obj.x,2)+Math.pow(obj.y2 - obj.y,2))/2))
 				+ "</span>";
 		}
@@ -232,12 +232,12 @@
 
 	function transformHTML(transform,col1){
 		var html = "";
-		var col2 = "<span>tx:" + Math.round(transform.translation[0]) 
-			+ " &nbsp;ty:" + Math.round(transform.translation[1]) 
+		var col2 = "<span>tx:" + Math.round(transform.translation[0])
+			+ " &nbsp;ty:" + Math.round(transform.translation[1])
 			+ "<br>sx:" + (transform.scale[0]).toFixed(2)
 			+ " &nbsp;sy:" + (transform.scale[1]).toFixed(2)
 			+ "<br>skewX: " + Math.round(transform.skew[0])
-			+ "° &nbsp;skewY: " + Math.round(transform.skew[1]) 
+			+ "° &nbsp;skewY: " + Math.round(transform.skew[1])
 			+ "°<br>rot: " + Math.round(transform.rotation) + "°</span>";
 
 		html =`<table style="width:100%">
@@ -253,7 +253,7 @@
 		document.getElementById("msr-main").innerHTML = html
 	};
 
-	
+
 
 	//Dialog Box
 	function toggleDialog() {
@@ -267,7 +267,7 @@
 			//elem.style.height = "112px";
 			open=true;
 		}
-		
+
 	};
 
 	function isOpen(){

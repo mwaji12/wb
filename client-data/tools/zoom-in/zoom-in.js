@@ -78,7 +78,7 @@
 	        Tools.scaleIndex=Math.min(Tools.scaleIndex+1,Tools.scaleDefaults.length-1);
             var scale = Tools.scaleDefaults[Tools.scaleIndex];
             zoom(origin, scale);
-	        setHashScale();	
+	        setHashScale();
         }
         pressed = false;
     }
@@ -113,6 +113,6 @@
 	    "release": release,
         },
         "mouseCursor": "zoom-in",
-	"isExtra":true
+	"isExtra":false
     });
 })(); //End of code isolation

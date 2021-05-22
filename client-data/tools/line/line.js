@@ -30,24 +30,24 @@
 		end = false,
 		startX,
 		startY,
-		curLine = "line",
+		curLine = "arrw",
 		size = 4
 		lastTime = performance.now(); //The time at which the last point was drawn
-	
+
 		var dashmode = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="-47 -57 250 250" style="enable-background:new -47 -57 250 250;"><g><path id="submenu-rect-path" fill="';
-		
+
 		var dashmode2 = '" d="M60.669,89.331l35.592-35.592l10.606,10.608L71.276,99.938L60.669,89.331z M131.944,39.27l28.663-28.662L150.001,0 l-28.663,28.662L131.944,39.27z M35.593,114.407L0.001,150l10.606,10.607l35.592-35.593L35.593,114.407z"/></g></svg>';
-		 
+
 		var icons = {
+			"arrw": {
+				icon: "→",
+				isHTML: true,
+				isSVG: false
+			},
 			"line":{
-				icon:"☇",
+				icon:"—",
 				isHTML:false,
 				isSVG:false
-			},
-			"arrw":{
-					icon:"→",
-					isHTML:true,
-					isSVG:false
 			},
 			"dashline":{
 				icon: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + dashmode + `black` + dashmode2 + `' ></span>`,
@@ -105,7 +105,7 @@
 				'y2': y
 			}
 			if (performance.now() - lastTime > 70 || end) {
-				
+
 				Tools.drawAndSend(curUpdate);
 				lastTime = performance.now();
 				if(wb_comp.list["Measurement"]){
@@ -128,7 +128,7 @@
 			} else {
 				draw(curUpdate);
 			}
-			
+
 		}
 		if (evt) evt.preventDefault();
 	}
@@ -202,7 +202,7 @@
 		if(lineData.transform)
 			line.setAttribute("transform",lineData.transform);
 		if(lineData.marker){
-			
+
 			var marker = Tools.createSVGElement("marker", {
 				id: "arrw_"+lineData.id,
 				markerWidth: "6",
@@ -252,7 +252,7 @@
 		if(lineData.transform)
 			line.setAttribute("transform",lineData.transform);
 		if(lineData.marker){
-			
+
 			var marker = Tools.createSVGElement("marker", {
 				id: "arrw_"+lineData.id,
 				markerWidth: "6",
@@ -282,8 +282,8 @@
 	};
 
 	function buildArrow(w,x0,y0,theta){
-		var x = 11*w - w*Math.sqrt(10);
-		var y = x/3;
+		var x = 14*w - w*Math.sqrt(10);
+		var y = x/2.5;
 		var a1 = x0 - y*Math.sin(theta);
 		var a2 = y0 + y*Math.cos(theta);
 		var b1 = x0 + x*Math.cos(theta);
@@ -338,6 +338,7 @@
 	var updateMenu = function(line){
 		var btns = document.getElementsByClassName("submenu-line");
 		for(var i = 0; i < btns.length; i++){
+			console.log(icons[btns[i].id.substr(13)])
 			if(icons[btns[i].id.substr(13)].isSVG){
 				btns[i].getElementsByClassName("tool-icon")[0].innerHTML = icons[btns[i].id.substr(13)].menuIcon;
 			}
@@ -357,9 +358,9 @@
 		btn.style.backgroundColor = "#eeeeff";
 		btn.style.color = "green";
 		btn.style.borderRadius = "8px";
-		
+
 	};
-   
+
 	function anglelockClicked(){
 		var elem = document.getElementById("angle-lock");
 		if(anglelock){
@@ -383,7 +384,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Straight line",
-		 "icon": "☇",
+		"icon": icons["arrw"].icon,
 		 "title":"Lines",
         "name": "Line",
         //"icon": "",
@@ -398,17 +399,15 @@
 		"toggle":toggle,
 		"menu":{
 			"title": 'Lines',
-			"content":`<div class="tool-extra submenu-line" id="submenu-line-line">
-							<span title="solid line" class="tool-icon">☇</span>
-						</div>
+			"content":`
 						<div class="tool-extra submenu-line" id="submenu-line-arrw">
 							<span title="solid arrow" class="tool-icon">` + icons["arrw"].icon + `</span>
 						</div>
+						<div class="tool-extra submenu-line" id="submenu-line-line">
+							<span title="solid line" class="tool-icon">—</span>
+						</div>
 						<div class="tool-extra submenu-line" id="submenu-line-dashline">
 							<span title="dashed line" class="tool-icon">` + icons["dashline"].icon + `</span>
-						</div>
-						<div style="width:143px;display:block" class="tool-extra"  id="submenu-line-angleLock">
-							<div style="margin-top:5px;padding:5px;font-size:.8rem;color: gray"><i style="font-size:1rem;margin-left:5px" id="angle-lock" class="fas fa-unlock"></i> &nbsp;0-30-45-60-90°</div>
 						</div>`,
 			"listener": menuListener
 		},
