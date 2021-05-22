@@ -293,4 +293,8 @@
 		"stylesheet": "tools/pencil/pencil.css"
 	});
 
+
+	//The pencil tool is selected by default
+	Tools.change("Pencil");
+
 })(); //End of code isolation

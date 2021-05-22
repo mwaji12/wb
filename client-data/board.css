@@ -25,18 +25,15 @@ html, body, svg {
   }
 
 #loadingMessage {
-	font-size: 1.5em;
-	background: #eee linear-gradient( #eee, #ccc);
+	font-size: 1em;
 	padding: 20px;
 	width: 40%;
 	line-height: 50px;
 	text-align: center;
-	border-radius: 10px;
 	position:fixed;
 	top: 40%;
 	left: 30%;
 	z-index: 1;
-	box-shadow: 0 0 2px #333;
 	transition: 1s;
 }
 
@@ -69,8 +66,8 @@ html, body, svg {
 	height:100%;
 	/*width:300px;*/
 	transition-duration:1s;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 6px;
+	padding-right: 6px;
 	z-index:98;
 }
 
@@ -125,7 +122,7 @@ html, body, svg {
 	text-decoration:none;
 	cursor:pointer;
 	background: #FFF;
-	margin-top: 10px;
+	margin-top: 6px;
 	height: 40px;
 	line-height: 40px;
 	border-radius: 3px;
@@ -288,10 +285,6 @@ html, body, svg {
 
 }
 
-.menu .tool-name.slider {
-	wifth: 30px
-}
-
 #shape-lock {
 	position:fixed;
 	bottom:60px;
@@ -334,6 +327,7 @@ html, body, svg {
 
 #usercount:before {
   content:"👥 ";
+  color: #666;
 }
 
 #usercount{
