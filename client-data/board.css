@@ -327,15 +327,10 @@ html, body, svg {
 	top:12px;
 }
 
-#usercount:before {
-  content:"👥 ";
-  color: #666;
-}
-
 #usercount{
 	position:fixed;
 	bottom:20px;
-	right:20px;
+	right:12px;
 	width:36px;
 	height:16px;
 	text-align:center;

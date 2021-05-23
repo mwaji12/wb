@@ -49,6 +49,46 @@
 		pressed = false;
 	}
 
+	function zoom(scale, x, y) {
+		var pageX = window.scrollX + x
+		var pageY = window.scrollY + y
+		var x = pageX / scale;
+		var y = pageY / scale;
+		var newScale = Tools.setScale(scale);
+		window.scrollTo(
+			pinchStartOrigin.x + x * (newScale - pinchStartScale),
+			pinchStartOrigin.y + y * (newScale - pinchStartScale)
+		);
+	}
+
+	var mc = new Hammer.Manager(document.getElementById("board"));
+	mc.add(new Hammer.Pinch());
+	mc.get('pinch').set({ enable: false });
+
+	var pinchStartScale = 0
+	var pinchStartOrigin = {}
+	mc.on("pinchstart", event => {
+		pinchStartScale = Tools.getScale();
+		pinchStartOrigin = {
+			x: window.scrollX,
+			y: window.scrollY,
+		}
+	});
+
+	mc.on("pinch", event => {
+		zoom(pinchStartScale * event.scale,
+			event.center.x,
+			event.center.y);
+	});
+
+	function onStart() {
+		mc.get('pinch').set({ enable: true });
+	}
+
+	function onQuit() {
+		mc.get('pinch').set({ enable: false });
+	}
+
 	Tools.add({ //The new tool
 		// "name": "Hand",
 		"iconHTML": '<i class="far fa-hand-paper"></i>',
@@ -62,6 +102,8 @@
 			"move": move,
 			"release": release
 		},
+		"onstart": onStart,
+		"onquit": onQuit,
 		"mouseCursor": "move"
 	});
 

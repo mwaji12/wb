@@ -28,6 +28,10 @@
  //TODO naming: clean up global vars
  //TODO config file
 
+document.getElementById("menu").addEventListener('dblclick', () =>
+	document.documentElement.requestFullscreen()
+);
+
 var Tools = {};
 var wb_comp = {};
 
@@ -358,8 +362,11 @@ Tools.HTML = {
 			tmp=this.templateExtra;
 		}
 		return tmp.add(function (elem) {
-			elem.addEventListener("mouseup", callback);
-			elem.addEventListener("touchend", callback);
+			if (!isTouchDevice) {
+				elem.addEventListener("mouseup", callback);
+			} else {
+				elem.addEventListener("touchend", callback);
+			}
 			elem.id = "toolID-" + toolName;
 			if(oneTouch) elem.classList.add("oneTouch");
 			if(menu) {
@@ -405,11 +412,11 @@ Tools.HTML = {
 								handleScroll,
 								false
 							);
-							//if(!isTouchDevice){
+							if(!isTouchDevice){
 								document.addEventListener("mousedown", listen , true);
-							//}else{
+							}else{
 								document.addEventListener("touchstart", listen , true);
-							//}
+							}
 						}
 					};
 
@@ -724,9 +731,9 @@ function updateDocumentTitle() {
 	// Scroll and hash handling
 	var scrollTimeout, lastStateUpdate = Date.now();
 
-	function zoom(scale, event) {
-		var pageX = window.scrollX + event.clientX
-		var pageY = window.scrollY + event.clientY
+	function zoom(scale, x, y) {
+		var pageX = window.scrollX + x
+		var pageY = window.scrollY + y
 		var x = pageX / scale;
 		var y = pageY / scale;
 		var oldScale = Tools.getScale();
@@ -739,7 +746,7 @@ function updateDocumentTitle() {
 
 	document.getElementById("board").addEventListener("wheel", function onWheel(event) {
 		event.preventDefault();
-		zoom(Tools.getScale()+event.deltaY*-0.005, event);
+		zoom(Tools.getScale()+event.deltaY*-0.005, event.clientX, event.clientY);
 		Tools.change("Hand")
 	});
 
@@ -875,30 +882,30 @@ Tools.toolHooks = [
 		}
 
 		if (listeners.press) {
-			//if(!isTouchDevice){
+			if(!isTouchDevice){
 				compiled["mousedown"] = compile(listeners.press);
-			//}else{
+			}else{
 				compiled["touchstart"] = compileTouch(listeners.press);
-			//}
+			}
 		}
 		if (listeners.move) {
-			//if(!isTouchDevice){
+			if(!isTouchDevice){
 				compiled["mousemove"] = compile(listeners.move);
-			//}else{
+			}else{
 				compiled["touchmove"] = compileTouch(listeners.move);
-			//}
+			}
 		}
 		if (listeners.release) {
 			var release = compile(listeners.release),
 				releaseTouch = compileTouch(listeners.release);
-			//if(!isTouchDevice){
+			if(!isTouchDevice){
 				compiled["mouseup"] = release;
 				compiled["mouseleave"] = release;
-			//}else{
+			}else{
 				compiled["touchleave"] = releaseTouch;
 				compiled["touchend"] = releaseTouch;
 				compiled["touchcancel"] = releaseTouch;
-			//}
+			}
 		}
 	}
 ];
@@ -1245,7 +1252,6 @@ function arrayContains(arr, searchFor){
     }
     return arr.includes(searchFor);
 }
-
 
 /**
  What does a "tool" object look like?
