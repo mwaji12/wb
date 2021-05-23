@@ -1120,7 +1120,7 @@ Tools.setSize = (function size() {
 
 	function update() {
 		chooser.value = Math.max(1, Math.min(20, chooser.value | 0));
-		sizeIndicator.r.baseVal.value = chooser.value*3;
+		sizeIndicator.r.baseVal.value = chooser.value*2;
 	}
 	update();
 
