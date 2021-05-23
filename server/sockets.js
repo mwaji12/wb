@@ -161,7 +161,6 @@ function handleMsg(board, message, socket) {
 		if(success){
 			[socket, socket.broadcast.to(board.name)].forEach(function(s) {
 				var batches = board.getAll();
-				console.log('boradcast to '+board.name)
 				s.emit('broadcast', {type:'sync', id: socket.id, _children: (batches[0] || []),_more:(batches.length>1),msgCount:board.getMsgCount(s.id)});
 				for(var i = 1; i < batches.length; i++){
 					s.emit("broadcast", { _children: batches[i], subtype: 'sync', _more:(i!=batches.length-1),msgCount:board.getMsgCount(s.id)});
