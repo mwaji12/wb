@@ -12,7 +12,7 @@
 				}
 				return result.join('');
 			}
-		protocol = window.location.host.indexOf('wb0') != -1 ? "https" : window.location.protocol
+		protocol = window.location.host.indexOf('wb0') != -1 ? "https:" : window.location.protocol
 		window.location=protocol+"//"+window.location.host+"/board.html?board="+makeid(24)+"#500,500,1.00"
 	</script>
 </head>
