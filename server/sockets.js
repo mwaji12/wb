@@ -96,7 +96,7 @@ function socketConnection(socket) {
 		if (!socket.rooms.hasOwnProperty(boardName)) socket.join(boardName);
 
 		getBoard(boardName).then(board => {
-			
+
 			var data = message.data;
 			if (!data) {
 				console.warn("Received invalid message: %s.", JSON.stringify(message));
@@ -133,20 +133,20 @@ function handleMsg(board, message, socket) {
 
 	//Broadcast socket Id when displaying pointer so we know whose pointer it is.
 	//Update and child events will also broadcast pointer location
-	if(config.DISPLAY_POINTERS && (message.type == "c" || 
+	if(config.DISPLAY_POINTERS && (message.type == "c" ||
 			(message.type == "update" && message.txt === undefined && message.data === undefined) || message.type == "child")){
 				message.socket=socket.id;
 	}
 
-	if(message.type == "clear" || message.type == "undo" || message.type == "redo"){ 
-		
+	if(message.type == "clear" || message.type == "undo" || message.type == "redo"){
+
 		/*Actions requiring sync. There is no way to enforce order of events with a broadcast
-		* system. Thus, it is possible that clients sometimes may see an inconsistent picture. 
+		* system. Thus, it is possible that clients sometimes may see an inconsistent picture.
 		* The server itself, though, should maintain a consistent environment. When a client
 		* calls "clear", "undo", or "redo", the server broadcasts its current state to all clients,
-		* essentially causing a page refresh. This is done in an effort to maintain a degree of 
-		* consistency between the clients that would be difficult to acheive by other means; 
-		* however, it may, at least in the case of "undo" and "redo", be an expensive operation, 
+		* essentially causing a page refresh. This is done in an effort to maintain a degree of
+		* consistency between the clients that would be difficult to acheive by other means;
+		* however, it may, at least in the case of "undo" and "redo", be an expensive operation,
 		* especially for large boards with many users.
 		*/
 
@@ -159,18 +159,18 @@ function handleMsg(board, message, socket) {
 			success = board.redo();
 		}
 		if(success){
-			var sockets = getConnectedSockets();
-			sockets.forEach(function(s,i) {
+			[socket, socket.broadcast.to(board.name)].forEach(function(s) {
 				var batches = board.getAll();
+				console.log('boradcast to '+board.name)
 				s.emit('broadcast', {type:'sync', id: socket.id, _children: (batches[0] || []),_more:(batches.length>1),msgCount:board.getMsgCount(s.id)});
 				for(var i = 1; i < batches.length; i++){
 					s.emit("broadcast", { _children: batches[i], subtype: 'sync', _more:(i!=batches.length-1),msgCount:board.getMsgCount(s.id)});
 				}
 			});
 		}else if(message.type == "clear"){
-			socket.emit("broadcast", {type: 'sync', id: socket.id,msgCount:board.getMsgCount(socket.id)});
+			socket.broadcast.to(board.name).emit("broadcast", {type: 'sync', id: socket.id,msgCount:board.getMsgCount(socket.id)});
 		}
-		
+
 	}else{
 
 		//Send message to all other users connected on the same board
