@@ -2,7 +2,7 @@
 
 wb0 is the simplest online collaborative whiteboard focusing on communication with diagrams
 
-![screenshot](https://user-images.githubusercontent.com/692124/119241465-ca447e00-bb56-11eb-83de-9dd61411266c.png)
+![screenshot](https://user-images.githubusercontent.com/692124/119272746-cb81b380-bc07-11eb-825f-c41e9abba368.png)
 
 This board is derived from the
 [rdbeach/wb](https://github.com/rdbeach/wb) version of the
