@@ -36,7 +36,7 @@
 		"x": 0,
 		"y": 0,
 		"size": 36,
-		"rawSize":16,
+		"rawSize":10,
 		"oldSize":0,
 		"opacity": 1,
 		"color": "#000",

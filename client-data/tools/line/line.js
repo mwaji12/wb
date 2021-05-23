@@ -52,7 +52,7 @@
 			"dashline":{
 				icon: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + dashmode + `black` + dashmode2 + `' ></span>`,
 				menuIcon:`<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + dashmode + `gray` + dashmode2 + `' ></span>`,
-				menuIconActive:`<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + dashmode + `green` + dashmode2 + `' ></span>`,
+				menuIconActive: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + dashmode + `gray` + dashmode2 + `' ></span>`,
 				isHTML:true,
 				isSVG:true
 			}
@@ -321,10 +321,11 @@
 	};
 
 	var menuButtonClicked = function(){
-			menuSelected = this.id.substr(13);
-			curLine = menuSelected;
-			updateMenu(menuSelected);
-			changeButtonIcon();
+		menuSelected = this.id.substr(13);
+		curLine = menuSelected;
+		updateMenu(menuSelected);
+		changeButtonIcon();
+		Tools.menus["Line"].show(false);
 	};
 
 	var changeButtonIcon = function(){
@@ -342,9 +343,6 @@
 			if(icons[btns[i].id.substr(13)].isSVG){
 				btns[i].getElementsByClassName("tool-icon")[0].innerHTML = icons[btns[i].id.substr(13)].menuIcon;
 			}
-			btns[i].style.backgroundColor = "#fff";
-			btns[i].style.color = "gray";
-			btns[i].style.borderRadius = "8px";
 		}
 		/*if(shape=="Ellipse"){
 			var extender = document.getElementById("submenu-line-extend")
@@ -355,9 +353,6 @@
 		if(icons[btn.id.substr(13)].isSVG){
 			btn.getElementsByClassName("tool-icon")[0].innerHTML = icons[btn.id.substr(13)].menuIconActive;
 		}
-		btn.style.backgroundColor = "#eeeeff";
-		btn.style.color = "green";
-		btn.style.borderRadius = "8px";
 
 	};
 
@@ -385,7 +380,6 @@
 	Tools.add({ //The new tool
 		// "name": "Straight line",
 		"iconHTML": icons["arrw"].icon,
-		 "title":"Lines",
         "name": "Line",
         //"icon": "",
 		"listeners": {
@@ -398,7 +392,6 @@
 		},
 		"toggle":toggle,
 		"menu":{
-			"title": 'Lines',
 			"content":`
 						<div class="tool-extra submenu-line" id="submenu-line-arrw">
 							<span title="solid arrow" class="tool-icon">` + icons["arrw"].icon + `</span>

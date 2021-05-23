@@ -130,9 +130,6 @@ html, body, svg {
 	transition-duration: .2s;
 	overflow: hidden;
 	width: max-content;
-	padding-top: 2px;
-	/*box-shadow: 0 0 3px #7FB2CC;
-	box-shadow: inset 0 0 3px #8FA2BC;*/
 }
 
 .menu .tool.expandable:focus-within,
@@ -246,8 +243,9 @@ html, body, svg {
 }
 
 .popover.menu {
-	border:1px solid #dddddd;
-	box-shadow: 0 0 3px #7FB2CC;
+	margin-top: -3px;
+	border:2px solid #eeeeee;
+	border-radius: 3px;
 }
 
 .popover .popover-body {
@@ -259,7 +257,7 @@ html, body, svg {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
 	cursor:pointer;
-	padding: 5px 5px 5px 5px;
+	padding: 7px 5px 3px 5px;
 }
 
 .popover .tool-extra {
@@ -284,7 +282,7 @@ html, body, svg {
     line-height: 15px;
     vertical-align: top;
     padding: 6px;
-
+	padding-top: 10px;
 }
 
 #shape-lock {

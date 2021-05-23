@@ -41,9 +41,9 @@
 					isSVG:false
 			},
 			"Ellipse":{
-				icon: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + ellipse + `black` + ellipse2 + `' ></span>`,
+				icon: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + ellipse + `gray` + ellipse2 + `' ></span>`,
 				menuIcon:`<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + ellipse + `gray` + ellipse2 + `' ></span>`,
-				menuIconActive:`<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + ellipse + `green` + ellipse2 + `' ></span>`,
+				menuIconActive: `<span><img style = 'margin-top:-7px;' draggable="false" src='data:image/svg+xml;utf8,` + ellipse + `gray` + ellipse2 + `' ></span>`,
 				isHTML:true,
 				isSVG:true
 			}
@@ -248,10 +248,11 @@
 	};
 
 	var menuButtonClicked = function(){
-			menuShape = this.id.substr(13);
-			curshape = menuShape;
-			updateMenu(menuShape);
-			changeButtonIcon();
+		menuShape = this.id.substr(13);
+		curshape = menuShape;
+		updateMenu(menuShape);
+		changeButtonIcon();
+		Tools.menus["Rectangle"].show(false);
 	};
 
 	var changeButtonIcon = function(){
@@ -268,9 +269,6 @@
 			if(icons[btns[i].id.substr(13)].isSVG){
 				btns[i].getElementsByClassName("tool-icon")[0].innerHTML = icons[btns[i].id.substr(13)].menuIcon;
 			}
-			btns[i].style.backgroundColor = "#fff";
-			btns[i].style.color = "gray";
-			btns[i].style.borderRadius = "8px";
 		}
 		/*if(shape=="Ellipse"){
 			var extender = document.getElementById("submenu-rect-extend")
@@ -281,10 +279,6 @@
 		if(icons[btn.id.substr(13)].isSVG){
 			btn.getElementsByClassName("tool-icon")[0].innerHTML = icons[btn.id.substr(13)].menuIconActive;
 		}
-		btn.style.backgroundColor = "#eeeeff";
-		btn.style.color = "green";
-		btn.style.borderRadius = "8px";
-
 	};
 
 	function dashedClicked(){
@@ -322,7 +316,6 @@
             "changeTool":"3"
         },
 		"menu":{
-			"title": 'Shapes',
 			"content": `<div class="tool-extra submenu-rect" id="submenu-rect-Rectangle">
 							<span title = "rectangle" class="tool-icon"><i class="far fa-square"></i></span>
 						</div>
