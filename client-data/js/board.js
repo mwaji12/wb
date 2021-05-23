@@ -23,9 +23,15 @@
  *
  */
 
-document.getElementById("menu").addEventListener('dblclick', () =>
-	document.documentElement.requestFullscreen()
-);
+document.getElementById("menu").addEventListener('dblclick', (evt) => {
+	if (evt.target == document.getElementById("menu")) {
+		if(document.fullscreenElement) {
+			document.exitFullscreen()
+		} else {
+			document.documentElement.requestFullscreen()
+		}
+	}
+});
 
 var Tools = {};
 var wb_comp = {};
