@@ -76,6 +76,7 @@
 	});
 
 	mc.on("pinch", event => {
+		pressed = false
 		zoom(pinchStartScale * event.scale,
 			event.center.x,
 			event.center.y);
