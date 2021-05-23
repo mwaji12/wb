@@ -52,6 +52,10 @@
 		}
 	}
 
+	function toggle(elem) {
+		clearBoard(false)
+	}
+
 	Tools.add({ //The new tool
 		"name": "Clear",
 		"iconHTML": '<i class="far fa-trash-alt"></i>',
@@ -60,8 +64,7 @@
         },
 		"listeners": {},
 		"draw": draw,
-		"oneTouch":true,
-		"onstart":clearBoard,
+		"toggle": toggle,
 		"mouseCursor": "crosshair",
 	});
 
