@@ -52,7 +52,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Redo",
-		"icon": "⟳",
+		"iconHTML": '<i class="fa fa-redo-alt"></i>',
 		"shortcuts": {
             "actions":[{"key":"shift-R","action":redo}]
         },

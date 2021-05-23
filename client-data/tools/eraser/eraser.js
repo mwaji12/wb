@@ -355,7 +355,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Remove",
-		"icon": "❌",
+		"iconHTML": '<i class="fa fa-eraser"></i>',
 		//"shortcut": "e",
 		"toggle":toggle,
 		"listeners": {

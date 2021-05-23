@@ -31,8 +31,8 @@
 
 	 var icons = {
 			"Rectangle":{
-				icon:"▢",
-				isHTML:false,
+			 	icon: "<i class='far fa-square'></i>",
+				isHTML:true,
 				isSVG:false
 			},
 			"Circle":{
@@ -308,7 +308,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Rectangle",
-		 "icon": "▢",
+		"iconHTML": "<i class='far fa-square'></i>",
 		"name": "Rectangle",
 		"title": "Shapes",
 		"listeners": {
@@ -324,7 +324,7 @@
 		"menu":{
 			"title": 'Shapes',
 			"content": `<div class="tool-extra submenu-rect" id="submenu-rect-Rectangle">
-							<span title = "rectangle" class="tool-icon">▢</span>
+							<span title = "rectangle" class="tool-icon"><i class="far fa-square"></i></span>
 						</div>
 						<div class="tool-extra submenu-rect" id="submenu-rect-Ellipse">
 							<span title = "ellipse" class="tool-icon">` + icons["Ellipse"].icon + `</span>

@@ -40,13 +40,13 @@
 
 		var icons = {
 			"arrw": {
-				icon: "→",
+				icon: '<i class="fa fa-long-arrow-alt-right"></i>',
 				isHTML: true,
 				isSVG: false
 			},
 			"line":{
-				icon:"—",
-				isHTML:false,
+				icon: '<i class="fa fa-slash"></i>',
+				isHTML:true,
 				isSVG:false
 			},
 			"dashline":{
@@ -384,7 +384,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Straight line",
-		"icon": icons["arrw"].icon,
+		"iconHTML": icons["arrw"].icon,
 		 "title":"Lines",
         "name": "Line",
         //"icon": "",
@@ -404,7 +404,7 @@
 							<span title="solid arrow" class="tool-icon">` + icons["arrw"].icon + `</span>
 						</div>
 						<div class="tool-extra submenu-line" id="submenu-line-line">
-							<span title="solid line" class="tool-icon">—</span>
+							<span title="solid line" class="tool-icon"><i class="fa fa-slash"></i></span>
 						</div>
 						<div class="tool-extra submenu-line" id="submenu-line-dashline">
 							<span title="dashed line" class="tool-icon">` + icons["dashline"].icon + `</span>

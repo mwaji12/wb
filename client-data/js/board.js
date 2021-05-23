@@ -723,6 +723,25 @@ function updateDocumentTitle() {
 	// Scroll and hash handling
 	var scrollTimeout, lastStateUpdate = Date.now();
 
+	function zoom(scale, event) {
+		var pageX = window.scrollX + event.clientX
+		var pageY = window.scrollY + event.clientY
+		var x = pageX / scale;
+		var y = pageY / scale;
+		var oldScale = Tools.getScale();
+		var newScale = Tools.setScale(scale);
+		window.scrollTo(
+			window.scrollX + x * (newScale - oldScale),
+			window.scrollY + y * (newScale - oldScale)
+		);
+	}
+
+	document.getElementById("board").addEventListener("wheel", function onWheel(event) {
+		event.preventDefault();
+		zoom(Tools.getScale()+event.deltaY*-0.005, event);
+		Tools.change("Hand")
+	});
+
 	window.addEventListener("scroll", function onScroll() {
 		var x = window.scrollX / Tools.getScale(),
 			y = window.scrollY / Tools.getScale();

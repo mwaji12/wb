@@ -1,7 +1,7 @@
 ﻿/**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -54,7 +54,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Clear",
-		"icon": "🗑",
+		"iconHTML": '<i class="far fa-trash-alt"></i>',
 		"shortcuts": {
             "actions":[{"key":"shift-C","action":clearBoard}]
         },

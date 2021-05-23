@@ -274,7 +274,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Pencil",
-		"icon": penIcons[0],
+		"iconHTML": '<i class="fa fa-pencil"></i>',
 		"name": "Pencil",
 		"title":"Pencil",
 		"listeners": {

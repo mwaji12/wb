@@ -52,7 +52,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Undo",
-		"icon": "⟲",
+		"iconHTML": '<i class="fa fa-undo-alt"></i>',
 		"shortcuts": {
             "actions":[{"key":"shift-U","action":undo}]
         },
