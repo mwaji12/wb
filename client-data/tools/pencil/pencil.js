@@ -35,7 +35,7 @@
 		end=false;
 	var curPen = {
 		"mode":"Pencil",
-		"penSize":3,
+		"penSize":2,
 		"eraserSize":16
 	};
 	//The data of the message that will be sent for every new point
@@ -274,7 +274,7 @@
 
 	Tools.add({ //The new tool
 		// "name": "Pencil",
-		"iconHTML": '<i class="fa fa-pencil"></i>',
+		"iconHTML": '<i class="fa fa-pen"></i>',
 		"name": "Pencil",
 		"title":"Pencil",
 		"listeners": {
@@ -286,7 +286,6 @@
             "changeTool":"1"
         },
 		"draw": draw,
-		"toggle":toggle,
 		"onstart":onStart,
 		"onquit":onQuit,
 		"mouseCursor": "crosshair",

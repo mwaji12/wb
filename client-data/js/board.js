@@ -358,7 +358,8 @@ Tools.HTML = {
 			tmp=this.templateExtra;
 		}
 		return tmp.add(function (elem) {
-			elem.addEventListener("click", callback);
+			elem.addEventListener("mouseup", callback);
+			elem.addEventListener("touchend", callback);
 			elem.id = "toolID-" + toolName;
 			if(oneTouch) elem.classList.add("oneTouch");
 			if(menu) {
@@ -1118,8 +1119,8 @@ Tools.setSize = (function size() {
 	var sizeIndicator = document.getElementById("sizeIndicator");
 
 	function update() {
-		chooser.value = Math.max(1, Math.min(50, chooser.value | 0));
-		sizeIndicator.r.baseVal.value = chooser.value;
+		chooser.value = Math.max(1, Math.min(20, chooser.value | 0));
+		sizeIndicator.r.baseVal.value = chooser.value*3;
 	}
 	update();
 
