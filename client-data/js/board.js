@@ -21,12 +21,7 @@
  * section 4, provided you include this license notice and a URL
  * through which recipients can access the Corresponding Source.
  *
- * @licend
  */
-
- //TODO Isolate this code...Expose one object
- //TODO naming: clean up global vars
- //TODO config file
 
 document.getElementById("menu").addEventListener('dblclick', () =>
 	document.documentElement.requestFullscreen()
@@ -141,11 +136,11 @@ Tools.boardName = (function () {
 
 //Turn on the cursor tracking
 
-//if(!isTouchDevice){
+if(!isTouchDevice){
 	Tools.svg.addEventListener("mousemove", handleMarker, false);
-//}else{
+}else{
 	Tools.svg.addEventListener("touchmove", handleMarker,{ 'passive': false });
-//}
+}
 
 var lastPointerUpdate = 0;
 var cursorLastUse={};
