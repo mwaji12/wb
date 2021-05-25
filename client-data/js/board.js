@@ -207,11 +207,11 @@ function moveMarker(message) {
 
 setInterval(function(){
 	for(var i in cursors){
-		if(Date.now()-cursorLastUse[cursors[i].id]>3000 && cursors[i].style.opacity!=.2){
-			$(cursors[i]).fadeTo( 1500, .2 )
+		if(Date.now()-cursorLastUse[cursors[i].id]>2000 && cursors[i].style.opacity!=.2){
+			$(cursors[i]).fadeTo( 1500, 0 )
 		}
 	}
- }, 2000);
+ }, 1000);
 
 function movePointer(message) {
 	var cursor = cursors["cursor"+message.socket];
