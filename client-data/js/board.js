@@ -33,6 +33,12 @@ document.getElementById("menu").addEventListener('dblclick', (evt) => {
 	}
 });
 
+document.getElementById("menu").addEventListener('click', (evt) => {
+	if (evt.target == document.getElementById("menu")) {
+		Tools.change(null)
+	}
+});
+
 var Tools = {};
 var wb_comp = {};
 

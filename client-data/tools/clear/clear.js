@@ -32,7 +32,7 @@
 	};
 
 	function clearBoard(evt) {
-        if(evt)evt.preventDefault();
+        if(evt.preventDefault)evt.preventDefault();
 		Tools.acceptMsgs = false;
 		draw(msg, true);
 		Tools.send(msg,"Clear");
@@ -51,6 +51,21 @@
 		}
 	}
 
+	function makeid(length) {
+		var result = [];
+		var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		var charactersLength = characters.length;
+		for (var i = 0; i < length; i++) {
+			result.push(characters.charAt(Math.floor(Math.random() *
+				charactersLength)));
+		}
+		return result.join('');
+	}
+
+	function createNew() {
+		window.location = "/board.html?board=" + makeid(24) + "#500,500,1.00"
+	}
+
 	Tools.add({ //The new tool
 		"name": "Clear",
 		"iconHTML": '<i class="far fa-trash-alt"></i>',
@@ -59,8 +74,8 @@
         },
 		"listeners": {},
 		"draw": draw,
-		"oneTouch":true,
-		"onstart":clearBoard,
+		"onstart": clearBoard,
+		"toggle": createNew,
 		"mouseCursor": "crosshair",
 	});
 
