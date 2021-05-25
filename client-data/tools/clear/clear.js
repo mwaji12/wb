@@ -31,12 +31,20 @@
 		"type": "clear"
 	};
 
+	var icons = ['<i class="far fa-trash-alt"></i>', '<i class="far fa-file"></i>']
+
 	function clearBoard(evt) {
         if(evt.preventDefault)evt.preventDefault();
+		console.log(evt)
 		Tools.acceptMsgs = false;
 		draw(msg, true);
 		Tools.send(msg,"Clear");
+		document.getElementById("toolID-Clear").getElementsByClassName("tool-icon")[0].innerHTML = icons[1]
 	};
+
+	function onQuit(evt) {
+		document.getElementById("toolID-Clear").getElementsByClassName("tool-icon")[0].innerHTML = icons[0]
+	}
 
 	function draw(data) {
 		var elem;
@@ -75,6 +83,7 @@
 		"listeners": {},
 		"draw": draw,
 		"onstart": clearBoard,
+		"onquit": onQuit,
 		"toggle": createNew,
 		"mouseCursor": "crosshair",
 	});
