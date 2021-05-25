@@ -108,4 +108,12 @@
 		"mouseCursor": "move"
 	});
 
+	document.getElementById("toolID-Hand").addEventListener('dblclick', (evt) => {
+		if (document.fullscreenElement) {
+			document.exitFullscreen()
+		} else {
+			document.documentElement.requestFullscreen()
+		}
+	});
+
 })(); //End of code isolation

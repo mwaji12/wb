@@ -23,16 +23,6 @@
  *
  */
 
-document.getElementById("menu").addEventListener('dblclick', (evt) => {
-	if (evt.target == document.getElementById("menu")) {
-		if(document.fullscreenElement) {
-			document.exitFullscreen()
-		} else {
-			document.documentElement.requestFullscreen()
-		}
-	}
-});
-
 document.getElementById("menu").addEventListener('click', (evt) => {
 	if (evt.target == document.getElementById("menu")) {
 		Tools.change(null)
