@@ -173,31 +173,33 @@ var ptrMessage = {
 
 function handleMarker(evt){
 	//evt.preventDefault();
+	var x = evt.pageX || evt.targetTouches[0] && evt.targetTouches[0].pageX
+	var y = evt.pageY || evt.targetTouches[0] && evt.targetTouches[0].pageY
 	var cur_time = Date.now();
 	if(wb_comp.list["Measurement"]&&!Tools.suppressPointerMsg){
 		wb_comp.list["Measurement"].update(
 			{type:"pointer",
-			x:evt.pageX / Tools.getScale(),
-			y:evt.pageY / Tools.getScale()
+			x: x / Tools.getScale(),
+			y: y / Tools.getScale()
 			})
 	}
 	if(Tools.showMyPointer && !Tools.suppressPointerMsg && lastPointerUpdate < cur_time - (1000/MAX_CURSOR_UPDATES_PER_SECOND) ){
 		lastPointerUpdate = cur_time;
-		ptrMessage.data.x = evt.pageX / Tools.getScale(),
-		ptrMessage.data.y = evt.pageY / Tools.getScale(),
+		ptrMessage.data.x = x / Tools.getScale(),
+		ptrMessage.data.y = y / Tools.getScale(),
 		ptrMessage.data.c = Tools.getColor()
 
 		Tools.socket.emit('broadcast', ptrMessage);
 	}
 	if(Tools.showMarker){
-		ptrMessage.data.x = evt.pageX / Tools.getScale(),
-		ptrMessage.data.y = evt.pageY / Tools.getScale(),
-		moveMarker(ptrMessage.data);
+		ptrMessage.data.x = x / Tools.getScale() + 25,
+		ptrMessage.data.y = y / Tools.getScale() + 25,
+		moveMarker(ptrMessage.data, 10);
 	}
 
 };
 
-function moveMarker(message) {
+function moveMarker(message, size) {
 	var cursor = Tools.svg.getElementById("mycursor");
 	if(!cursor){
 		Tools.svg.getElementById("cursors").innerHTML="<circle class='opcursor' id='mycursor' cx='100' cy='100' r='10' fill='#e75480' />";
@@ -206,9 +208,10 @@ function moveMarker(message) {
 
 	Tools.svg.appendChild(cursor);
 	//cursor.setAttributeNS(null, "r", Tools.getSize());
-	cursor.r.baseVal.value=Tools.getSize()/2;
+	cursor.r.baseVal.value = size || Tools.getSize()/2;
+	cursor.setAttribute("fill", Tools.getColor())
 	cursor.setAttributeNS(null, "cx", message.x-25);
-        cursor.setAttributeNS(null, "cy", message.y-25);
+    cursor.setAttributeNS(null, "cy", message.y-25);
 };
 
 setInterval(function(){

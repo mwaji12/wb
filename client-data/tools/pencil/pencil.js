@@ -30,7 +30,7 @@
 	var curLineId = "",
 		startX=0,
 		startY=0,
-		penIcons = ["🖊️","W"],
+		penIcons = ["<i class='fa fa-pen'></i>", "<i class='fa fa-bullseye'></i>"],
 		lastTime = performance.now(), //The time at which the last point was drawn
 		end=false;
 	var curPen = {
@@ -42,21 +42,17 @@
 	function PointMessage(x, y) {
 		this.type = 'child';
 		this.parent = curLineId;
-		this.x = x-(Tools.showMarker?25:0);
-		this.y = y-(Tools.showMarker?25:0);
+		this.x = x;
+		this.y = y;
 	}
 
 	function onStart(){
-		if(curPen.mode=="White out"){
-			Tools.setSize(curPen.eraserSize);
+		if(curPen.mode=="Pointer"){
 			Tools.showMarker=true;
 		}
 	};
 
 	function onQuit(){
-		if(curPen.mode=="White out"){
-			Tools.setSize(curPen.penSize);
-		}
 		Tools.showMarker=false;
 		var cursor = Tools.svg.getElementById("mycursor");
 		if(cursor){
@@ -68,6 +64,7 @@
 	function startLine(x, y, evt) {
 		//Prevent the press from being interpreted by the browser
 		evt.preventDefault();
+		if (curPen.mode == "Pointer") return handleMarker(evt)
 
 		Tools.suppressPointerMsg = true;
 		curLineId = Tools.generateUID("l"); //"l" for line
@@ -86,6 +83,7 @@
 	}
 
 	function continueLine(x, y, evt) {
+		if (curPen.mode == "Pointer") return handleMarker(evt), evt.preventDefault()
 		/*Wait 20ms before adding any point to the currently drawing line.
 		This allows the animation to be smother*/
 		if (curLineId !== "" && (performance.now() - lastTime > 20 || end)) {
@@ -107,6 +105,7 @@
 
 	function stopLine(x, y, evt) {
 		evt.preventDefault();
+		if (curPen.mode == "Pointer") return handleMarker(evt)
 		//Add a last point to the line
 		end=true;
 		continueLine(x, y);
@@ -251,25 +250,16 @@
 
 
 	function toggle(elem){
-		return
 		var index = 0;
 		if(curPen.mode=="Pencil"){
-			curPen.mode="White out"
-			curPen.penSize=Tools.getSize();
-			Tools.setSize(curPen.eraserSize);
-			Tools.showMarker=true;
+			curPen.mode="Pointer"
+			Tools.showMarker = true
 			index=1;
 		}else{
 			curPen.mode="Pencil"
-			curPen.erasurSize=Tools.getSize();
-			Tools.setSize(curPen.penSize);
-			Tools.showMarker=false;
-			var cursor = Tools.svg.getElementById("mycursor");
-			if(cursor){
-				cursor.remove();
-			}
+			Tools.showMarker = false
 		}
-		elem.getElementsByClassName("tool-icon")[0].textContent = penIcons[index];
+		elem.getElementsByClassName("tool-icon")[0].innerHTML = penIcons[index];
 	};
 
 	Tools.add({ //The new tool
@@ -288,6 +278,7 @@
 		"draw": draw,
 		"onstart":onStart,
 		"onquit":onQuit,
+		"toggle": toggle,
 		"mouseCursor": "crosshair",
 		"stylesheet": "tools/pencil/pencil.css"
 	});
