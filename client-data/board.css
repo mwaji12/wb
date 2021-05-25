@@ -103,6 +103,12 @@ html, body, svg {
 	margin-bottom: 0 !important;
 }
 
+@media (min-height: 680px) {
+	#tools {
+		margin-top: 56px;
+	}
+}
+
 @keyframes minimize {
 	to {max-width:100%}
 }
