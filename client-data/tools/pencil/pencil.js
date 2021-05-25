@@ -58,6 +58,9 @@
 		if(cursor){
 			cursor.remove();
 		}
+		if(curPen.mode=="Pointer") {
+			toggle()
+		}
 	};
 
 
@@ -248,7 +251,7 @@
 		return line;
 	}
 
-
+	var thisElem = null;
 	function toggle(elem){
 		var index = 0;
 		if(curPen.mode=="Pencil"){
@@ -259,7 +262,8 @@
 			curPen.mode="Pencil"
 			Tools.showMarker = false
 		}
-		elem.getElementsByClassName("tool-icon")[0].innerHTML = penIcons[index];
+		(elem || thisElem).getElementsByClassName("tool-icon")[0].innerHTML = penIcons[index];
+		thisElem = elem
 	};
 
 	Tools.add({ //The new tool
