@@ -452,7 +452,7 @@ Tools.HTML = {
 				elem.getElementsByClassName("tool-icon")[0].textContent = toolIcon;
 			}
 			elem.title =
-				Tools.i18n.t(Tools.list[toolName].title||toolName) + (Tools.list[toolName].toggle?"  Click to toggle":"");
+				Tools.i18n.t(Tools.list[toolName].title||toolName);
 		});
 	},
 	changeTool: function (oldToolName, newToolName) {

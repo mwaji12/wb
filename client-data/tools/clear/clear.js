@@ -76,6 +76,7 @@
 
 	Tools.add({ //The new tool
 		"name": "Clear",
+		"title": "Clear / New Board",
 		"iconHTML": '<i class="far fa-trash-alt"></i>',
 		"shortcuts": {
             "actions":[{"key":"shift-C","action":clearBoard}]

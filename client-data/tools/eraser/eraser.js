@@ -354,7 +354,7 @@
 	};
 
 	Tools.add({ //The new tool
-		"name": "Remove",
+		"name": "Eraser",
 		"iconHTML": '<i class="fa fa-eraser"></i>',
 		"listeners": {
 			"press": startErasing,

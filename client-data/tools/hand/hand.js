@@ -94,6 +94,7 @@
 		// "name": "Hand",
 		"iconHTML": '<i class="far fa-hand-paper"></i>',
         "name": "Hand",
+		"title": "Pan / Zoom (pinch) / Fullscreen (double-click)",
 		//"icon": "",
 		"shortcuts": {
             "changeTool":"8"

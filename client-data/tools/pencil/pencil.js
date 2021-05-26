@@ -270,7 +270,7 @@
 		// "name": "Pencil",
 		"iconHTML": '<i class="fa fa-pen"></i>',
 		"name": "Pencil",
-		"title":"Pencil",
+		"title":"Pencil / Pointer",
 		"listeners": {
 			"press": startLine,
 			"move": continueLine,
