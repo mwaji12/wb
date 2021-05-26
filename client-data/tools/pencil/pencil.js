@@ -54,10 +54,6 @@
 
 	function onQuit(){
 		Tools.showMarker=false;
-		var cursor = Tools.svg.getElementById("mycursor");
-		if(cursor){
-			cursor.remove();
-		}
 		if(curPen.mode=="Pointer") {
 			toggle()
 		}
@@ -259,6 +255,10 @@
 			Tools.showMarker = true
 			index=1;
 		}else{
+			var cursor = Tools.svg.getElementById("mycursor");
+			if(cursor){
+				cursor.remove();
+			}
 			curPen.mode="Pencil"
 			Tools.showMarker = false
 		}
