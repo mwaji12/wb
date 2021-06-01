@@ -241,8 +241,6 @@
 		for(var i = 0; i < btns.length; i++){
 			btns[i].addEventListener("click", menuButtonClicked);
 		}
-		var elem = document.getElementById("rect-dashed");
-		elem.addEventListener("click",dashedClicked);
 		updateMenu("Rectangle")
 		menuInitialized = true;
 	};
@@ -250,6 +248,7 @@
 	var menuButtonClicked = function(){
 		menuShape = this.id.substr(13);
 		curshape = menuShape;
+		gtag('event', 'click', { 'event_category': curshape });
 		updateMenu(menuShape);
 		changeButtonIcon();
 		Tools.menus["Rectangle"].show(false);
@@ -300,6 +299,10 @@
 		return false;
 	};
 
+	function onStart() {
+		gtag('event', 'click', { 'event_category': curshape });
+	}
+
 	Tools.add({ //The new tool
 		// "name": "Rectangle",
 		"iconHTML": "<i class='far fa-square'></i>",
@@ -325,6 +328,7 @@
 			"listener": menuListener
 		},
 		"mouseCursor": "crosshair",
+		"onstart": onStart,
 		"stylesheet": "tools/rect/rect.css"
 	});
 

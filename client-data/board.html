@@ -14,7 +14,14 @@
 	<script src="https://kit.fontawesome.com/0166a4ad2b.js" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
 	<script src="socket.io.js"></script>
-
+	<script async src="https://www.googletagmanager.com/gtag/js?{{ gtag }}"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', '{{ gtag }}');
+		gtag('event', 'click', { 'event_category': 'init' });
+	</script>
 	<meta name="description"
 		content="A free and opensource online collaborative drawing tool." />
 	<meta name="keywords"
@@ -31,6 +38,7 @@
 
 <body>
 	<script>
+
 		$(window).on("load", function() {
 			//init();
 		});

@@ -32,6 +32,7 @@
 	};
 
 	function undo(evt) {
+		gtag('event', 'click', { 'event_category': 'undo' });
 		if(evt)evt.preventDefault();
 		draw(msg);
 		Tools.send(msg,"Undo");

@@ -47,6 +47,7 @@
 	}
 
 	function onStart(){
+		gtag('event', 'click', { 'event_category': 'pencil' });
 		if(curPen.mode=="Pointer"){
 			Tools.showMarker=true;
 		}
@@ -251,15 +252,17 @@
 	function toggle(elem){
 		var index = 0;
 		if(curPen.mode=="Pencil"){
+			gtag('event', 'click', { 'event_category': 'pointer' });
 			curPen.mode="Pointer"
 			Tools.showMarker = true
 			index=1;
 		}else{
+			gtag('event', 'click', { 'event_category': 'pencil' });
+			curPen.mode="Pencil"
 			var cursor = Tools.svg.getElementById("mycursor");
-			if(cursor){
+			if (cursor) {
 				cursor.remove();
 			}
-			curPen.mode="Pencil"
 			Tools.showMarker = false
 		}
 		(elem || thisElem).getElementsByClassName("tool-icon")[0].innerHTML = penIcons[index];

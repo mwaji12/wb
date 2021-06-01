@@ -68,6 +68,7 @@
 	var pinchStartScale = 0
 	var pinchStartOrigin = {}
 	mc.on("pinchstart", event => {
+		gtag('event', 'click', { 'event_category': 'pinch' });
 		pinchStartScale = Tools.getScale();
 		pinchStartOrigin = {
 			x: window.scrollX,
@@ -83,6 +84,7 @@
 	});
 
 	function onStart() {
+		gtag('event', 'click', { 'event_category': 'pan' });
 		mc.get('pinch').set({ enable: true });
 	}
 

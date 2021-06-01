@@ -353,6 +353,10 @@
 			elem.getElementsByClassName("tool-icon")[0].innerHTML = icons[index];
 	};
 
+	function onStart() {
+		gtag('event', 'click', { 'event_category': 'eraser' });
+	}
+
 	Tools.add({ //The new tool
 		"name": "Eraser",
 		"iconHTML": '<i class="fa fa-eraser"></i>',
@@ -364,6 +368,7 @@
 		"shortcuts": {
             "changeTool":"5"
         },
+		"onstart": onStart,
 		"draw": draw,
 		"mouseCursor": "crosshair",
 	});

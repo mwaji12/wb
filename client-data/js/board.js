@@ -760,6 +760,7 @@ function updateDocumentTitle() {
 			if (Date.now() - lastStateUpdate > 5000 && hash != window.location.hash) {
 				window.history.pushState({}, "", hash);
 				lastStateUpdate = Date.now();
+				gtag('event', 'click', { 'event_category': 'scroll' });
 			} else {
 				window.history.replaceState({}, "", hash);
 			}
@@ -1113,6 +1114,9 @@ Tools.decomposeMatrix = function(mat) {
 
 Tools.getColor = (function color() {
 	var chooser = document.getElementById("chooseColor");
+	chooser.addEventListener('click', function() {
+		gtag('event', 'click', { 'event_category': 'color' });
+	});
 	// Init with a random color
 	var clrs = ["#001f3f", "#0074D9", "#7FDBFF", "#39CCCC", "#3D9970",
 		"#2ECC40", "#01FF70", "#FFDC00", "#FF851B", "#FF4136",
@@ -1123,6 +1127,9 @@ Tools.getColor = (function color() {
 
 Tools.setSize = (function size() {
 	var chooser = document.getElementById("chooseSize");
+	chooser.addEventListener('click', function () {
+		gtag('event', 'click', { 'event_category': 'size' });
+	});
 	var sizeIndicator = document.getElementById("sizeIndicator");
 
 	function update() {

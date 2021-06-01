@@ -34,8 +34,8 @@
 	var icons = ['<i class="far fa-trash-alt"></i>', '<i class="far fa-file"></i>']
 
 	function clearBoard(evt) {
+		gtag('event', 'click', { 'event_category': 'clear' });
         if(evt.preventDefault)evt.preventDefault();
-		console.log(evt)
 		Tools.acceptMsgs = false;
 		draw(msg, true);
 		Tools.send(msg,"Clear");
@@ -71,6 +71,7 @@
 	}
 
 	function createNew() {
+		gtag('event', 'click', { 'event_category': 'new' });
 		window.location = "/board.html?board=" + makeid(24) + "#500,500,1.00"
 	}
 

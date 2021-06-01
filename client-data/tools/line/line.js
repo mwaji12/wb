@@ -314,8 +314,6 @@
 		for(var i = 0; i < btns.length; i++){
 			btns[i].addEventListener("click", menuButtonClicked);
 		}
-		var elem = document.getElementById("angle-lock");
-		elem.addEventListener("click",anglelockClicked);
 		updateMenu("line")
 		menuInitialized = true;
 	};
@@ -324,6 +322,7 @@
 		menuSelected = this.id.substr(13);
 		curLine = menuSelected;
 		updateMenu(menuSelected);
+		gtag('event', 'click', { 'event_category': curLine });
 		changeButtonIcon();
 		Tools.menus["Line"].show(false);
 	};
@@ -339,7 +338,6 @@
 	var updateMenu = function(line){
 		var btns = document.getElementsByClassName("submenu-line");
 		for(var i = 0; i < btns.length; i++){
-			console.log(icons[btns[i].id.substr(13)])
 			if(icons[btns[i].id.substr(13)].isSVG){
 				btns[i].getElementsByClassName("tool-icon")[0].innerHTML = icons[btns[i].id.substr(13)].menuIcon;
 			}
@@ -377,6 +375,10 @@
 		return false;
 	};
 
+	function onStart() {
+		gtag('event', 'click', { 'event_category': curLine});
+	}
+
 	Tools.add({ //The new tool
 		// "name": "Straight line",
 		"iconHTML": icons["arrw"].icon,
@@ -405,6 +407,7 @@
 			"listener": menuListener
 		},
 		"draw": draw,
+		"onstart": onStart,
 		"mouseCursor": "crosshair",
 		"stylesheet": "tools/line/line.css"
 	});

@@ -32,7 +32,8 @@ class Template {
         const language = accept_language_parser.pick(languages, accept_languages) || 'en';
         const translations = TRANSLATIONS[language] || {};
         const baseUrl = findBaseUrl(request);
-        return { baseUrl, languages, language, translations };
+        const gtag = process.env.GTAG
+        return { baseUrl, languages, language, translations, gtag };
     }
     serve(request, response) {
         const parsedUrl = url.parse(request.url, true);

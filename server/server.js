@@ -82,7 +82,7 @@ function handleRequest(request, response) {
 	var parts = parsedUrl.pathname.split('/');
 	if (parts[0] === '') parts.shift();
 
-	if (parts[0] === "boards") {
+	if (parts[0] === "boards" || parts[0] === "board.html") {
 		// "boards" refers to the root directory
 		if (parts.length === 1 && parsedUrl.query.board) {
 			// '/boards?board=...' This allows html forms to point to boards

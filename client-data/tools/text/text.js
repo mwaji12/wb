@@ -47,6 +47,7 @@
 
 
 	function onStart(evt){
+		gtag('event', 'click', { 'event_category': 'text' });
 		curText.oldSize=Tools.getSize();
 		Tools.setSize(curText.rawSize);
 	};
