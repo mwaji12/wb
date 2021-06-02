@@ -47,167 +47,43 @@
 	function startErasing(x, y, evt) {
 		//Prevent the press from being interpreted by the browser
 		evt.preventDefault();
-		if(curTool=="multi"){
-			var shape  = Tools.createSVGElement("rect");
-
-			shape.id = "erase-rect";
-
-			shape.setAttribute("stroke", "red");
-			shape.setAttribute("fill", "gray");
-			shape.setAttribute("stroke-width",1);
-			shape.setAttribute("fill-opacity",.1);
-
-			Tools.svg.appendChild(shape);
-			if(!textElem){
-				textElem = Tools.createSVGElement("text");
-				textElem.setAttribute("x", -1000);
-				textElem.setAttribute("y", 100);
-
-				textElem.setAttribute("font-size", 32);
-				textElem.setAttribute("fill", "black");
-				textElem.setAttribute("opacity",.1);
-				textElem.textContent = "Kaboom!";
-				Tools.svg.appendChild(textElem);
-			}
-			rect.x = x;
-			rect.y = y;
-			makeRect = true;
-		}else{
-			erasing = true;
-			erase(x, y, evt);
-		}
-
+		erasing = true;
+		erase(x, y, evt);
 	}
 
 
 
 	function stopErasing(x, y, evt) {
 		evt.preventDefault();
-		if(curTool=="multi"){
-			//Add a last point to the shape
-			if(makeRect){
-				end=true;
-				erase(x, y);
-				end=false;
-				var shape = svg.getElementById("erase-rect");
-				shape.remove();
-				textElem.setAttribute("x", -1000);
-				textElem.setAttribute("y", 100);
-				makeRect = false;
-				var targets = [];
-				var rx = rect.x*Tools.scale-document.documentElement.scrollLeft;
-				var rx2 = rect.x2*Tools.scale-document.documentElement.scrollLeft;
-				var ry = rect.y*Tools.scale-document.documentElement.scrollTop;
-				var ry2 = rect.y2*Tools.scale-document.documentElement.scrollTop;
-				$("#layer-"+Tools.layer).find("*").each(
-					function( i, el ) {
-						var r = el.getBoundingClientRect();
-						if(insideRect(r.x,r.y,r.width,r.height,rx,ry,rx2,ry2)){
-							targets.push(el);
-						}
-					}
-				);
-				if(targets.length>0){
-					var msg = {
-						"type": "delete",
-						"id": null
-					};
-					msg.id = [];
-					for(var i = 0;i<targets.length;i++){
-						msg.id.push(targets[i].id);
-
-					};
-					Tools.drawAndSend(msg);
-				}
-			}
-		}else{
-			erasing = false;
-
-		}
+		erasing = false;
 	}
-
-	function insideRect(x,y,w,h,rx,ry,rx2,ry2){
-		if(rx<=x&&ry<=y){
-			if(rx2>=x+w&&ry2>=y+h){
-				if(rx2>rx&&ry2>ry){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-
 
 	function erase(x, y, evt) {
 		if (evt) evt.preventDefault();
-		if(curTool=="multi"){
-			if(makeRect){
-				rect['x2'] = x; rect['y2'] = y;
-				if (performance.now() - lastTime > 20|| end) {
-					var shape = svg.getElementById("erase-rect");
-					shape.x.baseVal.value = Math.min(rect['x2'], rect['x']);
-					shape.y.baseVal.value = Math.min(rect['y2'], rect['y']);
-					shape.width.baseVal.value = Math.abs(rect['x2'] - rect['x']);
-					shape.height.baseVal.value = Math.abs(rect['y2'] - rect['y']);
-					if(shape.width.baseVal.value>150&&shape.height.baseVal.value>150){
-						textElem.setAttribute("x", shape.x.baseVal.value+shape.width.baseVal.value/2-60);
-						textElem.setAttribute("y", shape.y.baseVal.value+shape.height.baseVal.value/2+14);
-					}else{
-						textElem.setAttribute("x", -1000);
-						textElem.setAttribute("y",100);
-					}
-					lastTime = performance.now();
-				}
-			}
-		}else{
-			// evt.target should be the element over which the mouse is...
-			var target = evt.target;
-			if (evt.type === "touchmove") {
-				// ... the target of touchmove events is the element that was initially touched,
-				// not the one **currently** being touched
-				var touch = evt.touches[0];
-				target = document.elementFromPoint(touch.clientX, touch.clientY);
-			}
-			if(false || evt.type === "touchmove"){
-				if (erasing && target !== Tools.svg && target.id) {
-					var msg = {
-						"type": "delete",
-						"id": null
-					};
-					msg.id = target.id;
-					if(!msg.id.startsWith("layer")&&msg.id!="defs"&&msg.id!="rect_1"&&msg.id!="cursors"){
-						var elem = svg.getElementById(msg.id);
-						if (elem === null) return; //console.error("Eraser: Tried to delete an element that does not exist.");
-						else{
-							var layer;
-							var c = elem.getAttribute("class");
-							var d = elem.getAttribute("data-lock");
-							if(c && c.startsWith("layer-") && d!=1){
-								layer = parseInt(c.substr(6));
-								if(shouldDelete(x,y,layer))Tools.drawAndSend(msg);
-							}
-						}
-					}
-				}
-			}else{
-				if(erasing){
-					if(scanForObject(x,y,target,0,0))return
-					if(scanForObject(x,y,target,0,1))return
-					if(scanForObject(x,y,target,0,-1))return
-					if(scanForObject(x,y,target,1,1))return
-					if(scanForObject(x,y,target,1,0))return
-					if(scanForObject(x,y,target,1,-1))return
-					if(scanForObject(x,y,target,-1,1))return
-					if(scanForObject(x,y,target,-1,0))return
-					if(scanForObject(x,y,target,-1,-1))return
-					for(var i = 2; i<7;i++){
-						if(scanForObject(x,y,target,0,i))return;
-						if(scanForObject(x,y,target,i,0))return;
-						if(scanForObject(x,y,target,0,-i))return;
-						if(scanForObject(x,y,target,-i,0))return;
-					}
-				}
+
+		// evt.target should be the element over which the mouse is...
+		var target = evt.target;
+		if (evt.type === "touchmove") {
+			// ... the target of touchmove events is the element that was initially touched,
+			// not the one **currently** being touched
+			var touch = evt.touches[0];
+			target = document.elementFromPoint(touch.clientX, touch.clientY);
+		}
+		if(erasing){
+			if(scanForObject(x,y,target,0,0))return
+			if(scanForObject(x,y,target,0,1))return
+			if(scanForObject(x,y,target,0,-1))return
+			if(scanForObject(x,y,target,1,1))return
+			if(scanForObject(x,y,target,1,0))return
+			if(scanForObject(x,y,target,1,-1))return
+			if(scanForObject(x,y,target,-1,1))return
+			if(scanForObject(x,y,target,-1,0))return
+			if(scanForObject(x,y,target,-1,-1))return
+			for(var i = 2; i<10;i++){
+				if(scanForObject(x,y,target,0,i))return;
+				if(scanForObject(x,y,target,i,0))return;
+				if(scanForObject(x,y,target,0,-i))return;
+				if(scanForObject(x,y,target,-i,0))return;
 			}
 		}
 	}
@@ -255,7 +131,7 @@
 
 					if(c && c.startsWith("layer-") && d!=1){
 						layer = parseInt(c.substr(6));
-						if(shouldDelete(x+i,y+j,layer))Tools.drawAndSend(msg);
+						if(shouldDelete(x+i,y+j,layer)) Tools.drawAndSend(msg);
 						return true
 					}
 				}
@@ -342,7 +218,7 @@
 	var svg = Tools.svg;
 
 	function toggle(elem){
-		return
+
 		var index = 0;
 		if(curTool=="single"){
 			curTool="multi";
