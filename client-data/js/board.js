@@ -139,7 +139,7 @@ Tools.boardName = (function () {
 //Turn on the cursor tracking
 
 if(!isTouchDevice){
-	Tools.svg.addEventListener("mousemove", handleMarker, false);
+	//Tools.svg.addEventListener("mousemove", handleMarker, false);
 }else{
 	Tools.svg.addEventListener("touchmove", handleMarker,{ 'passive': false });
 }
@@ -163,8 +163,8 @@ var ptrMessage = {
 
 function handleMarker(evt){
 	//evt.preventDefault();
-	var x = evt.pageX || evt.targetTouches[0] && evt.targetTouches[0].pageX
-	var y = evt.pageY || evt.targetTouches[0] && evt.targetTouches[0].pageY
+	var x = evt.pageX || evt.targetTouches && evt.targetTouches[0] && evt.targetTouches[0].pageX
+	var y = evt.pageY || evt.targetTouches && evt.targetTouches[0] && evt.targetTouches[0].pageY
 	var cur_time = Date.now();
 	if(wb_comp.list["Measurement"]&&!Tools.suppressPointerMsg){
 		wb_comp.list["Measurement"].update(
@@ -182,14 +182,16 @@ function handleMarker(evt){
 		Tools.socket.emit('broadcast', ptrMessage);
 	}
 	if(Tools.showMarker){
-		ptrMessage.data.x = x / Tools.getScale() + 25,
-		ptrMessage.data.y = y / Tools.getScale() + 25,
-		moveMarker(ptrMessage.data, 10);
+		ptrMessage.data.x = x / Tools.getScale() + 25;
+		ptrMessage.data.y = y / Tools.getScale() + 25;
+		menuWidth = document.getElementById("menu").offsetWidth
+		opacity = Math.min(1, (evt.clientX - menuWidth) / 20)
+		moveMarker(ptrMessage.data, 10, opacity);
 	}
 
 };
 
-function moveMarker(message, size) {
+function moveMarker(message, size, opacity) {
 	var cursor = Tools.svg.getElementById("mycursor");
 	if(!cursor){
 		Tools.svg.getElementById("cursors").innerHTML="<circle class='opcursor' id='mycursor' cx='100' cy='100' r='10' fill='#e75480' />";
@@ -202,15 +204,18 @@ function moveMarker(message, size) {
 	cursor.setAttribute("fill", Tools.getColor())
 	cursor.setAttributeNS(null, "cx", message.x-25);
     cursor.setAttributeNS(null, "cy", message.y-25);
+	if(opacity) {
+		cursor.style.opacity = opacity
+	}
 };
 
 setInterval(function(){
 	for(var i in cursors){
-		if(Date.now()-cursorLastUse[cursors[i].id]>2000 && cursors[i].style.opacity!=.2){
-			$(cursors[i]).fadeTo( 1500, 0 )
+		if(Date.now()-cursorLastUse[cursors[i].id]>400 && cursors[i].style.opacity!=0){
+			$(cursors[i]).fadeTo( 500, 0 )
 		}
 	}
- }, 1000);
+ }, 200);
 
 function movePointer(message) {
 	var cursor = cursors["cursor"+message.socket];
@@ -235,11 +240,13 @@ function movePointer(message) {
 		Tools.svg.appendChild(cursor);
 		cursors["cursor"+message.socket]= cursor;
 	}
-	if(message.c)
-		cursor.setAttributeNS(null, "fill", message.c);
+
+	if(message.c || message.color) {
+		cursor.setAttributeNS(null, "fill", message.c || message.color);
+	}
 	cursor.setAttributeNS(null, "visibility", "visible");
 	$(cursor).stop(true);
-	cursor.style.opacity = .75;
+	cursor.style.opacity = .6;
 	//cursor.style.visibility = "visible"
 	//cursor.style.transform = "translate(" + (message.tx || message.x2 || message.x) + "px, " +  (message.ty || message.y2 || message.y) + "px)";
 	var x=0,y=0;
@@ -253,9 +260,7 @@ function movePointer(message) {
 		x=message.x;
 		y=message.y;
 	}
-	if(x==null){
-		console.log(message)
-	}else{
+	if(x !== undefined){
 		cursor.setAttributeNS(null, "cx", x);
 		cursor.setAttributeNS(null, "cy", y);
 	}
@@ -660,7 +665,7 @@ function handleMessage(message) {
 	//console.log(message);
 	//TODO: Right now if you are sending the socket id it is to identify the cursor
 	//and move it. CHange later
-	if((message.type == "c" || message.socket) && Tools.showOtherPointers){
+	if((message.type == "c" || message.color || message.socket) && Tools.showOtherPointers){
 		movePointer(message);
 	}
 	if(message.userCount)updateUserCount(message.userCount);

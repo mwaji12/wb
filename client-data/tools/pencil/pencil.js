@@ -105,7 +105,17 @@
 
 	function stopLine(x, y, evt) {
 		evt.preventDefault();
-		if (curPen.mode == "Pointer") return handleMarker(evt)
+		if (curPen.mode == "Pointer") {
+			if(isTouchDevice) {
+				var cursor = Tools.svg.getElementById("mycursor");
+				if (cursor) {
+					cursor.remove();
+				}
+			} else {
+				handleMarker(evt)
+			}
+			return
+		}
 		//Add a last point to the line
 		end=true;
 		continueLine(x, y);
