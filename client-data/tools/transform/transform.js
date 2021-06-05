@@ -78,15 +78,22 @@
 	};
 
 	var touchtime = 0
-	function doubleTouchHandler() {
+	var tx, ty;
+	function doubleTouchHandler(evt) {
+		if(evt.targetTouches.length > 1) return;
 		if (touchtime == 0) {
 			touchtime = new Date().getTime();
+			tx = evt.targetTouches[0].clientX
+			ty = evt.targetTouches[0].clientY
 		} else {
-			if (((new Date().getTime()) - touchtime) < 400) {
-				fullscreen()
-				touchtime = 0;
+			if (((new Date().getTime()) - touchtime) < 400 &&
+				(Math.abs(evt.targetTouches[0].clientX - tx) < 20 && Math.abs(evt.targetTouches[0].clientY - ty) < 20)) {
+					fullscreen()
+					touchtime = 0;
 			} else {
 				touchtime = new Date().getTime();
+				tx = evt.targetTouches[0].clientX
+				ty = evt.targetTouches[0].clientY
 			}
 		}
 	}
