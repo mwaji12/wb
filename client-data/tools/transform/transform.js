@@ -26,11 +26,9 @@
 
 (function transform() { //Code isolation
 
-	var img1 = '<svg id="_x31__x2C_5" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><g><path d="m5.25 6h-4.5c-.414 0-.75-.336-.75-.75v-4.5c0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75v4.5c0 .414-.336.75-.75.75zm-3.75-1.5h3v-3h-3z"/></g><g><path d="m23.25 6h-4.5c-.414 0-.75-.336-.75-.75v-4.5c0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75v4.5c0 .414-.336.75-.75.75zm-3.75-1.5h3v-3h-3z"/></g><g><path d="m5.25 24h-4.5c-.414 0-.75-.336-.75-.75v-4.5c0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75v4.5c0 .414-.336.75-.75.75zm-3.75-1.5h3v-3h-3z"/></g><g><path d="m23.25 24h-4.5c-.414 0-.75-.336-.75-.75v-4.5c0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75v4.5c0 .414-.336.75-.75.75zm-3.75-1.5h3v-3h-3z"/></g><g><path d="m21.25 19.5c-.414 0-.75-.336-.75-.75v-13.5c0-.414.336-.75.75-.75s.75.336.75.75v13.5c0 .414-.336.75-.75.75z"/></g><g><path d="m2.75 19.5c-.414 0-.75-.336-.75-.75v-13.5c0-.414.336-.75.75-.75s.75.336.75.75v13.5c0 .414-.336.75-.75.75z"/></g><g><path d="m18.75 22h-13.5c-.414 0-.75-.336-.75-.75s.336-.75.75-.75h13.5c.414 0 .75.336.75.75s-.336.75-.75.75z"/></g><g><path d="m18.75 3.5h-13.5c-.414 0-.75-.336-.75-.75s.336-.75.75-.75h13.5c.414 0 .75.336.75.75s-.336.75-.75.75z"/></g></svg>';
-	var img2 = '<svg id="Layer1" enable-background="new 0 0 512 512" height="24" viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg" ><g><path d="m30 30h25.21v-30h-55.21v55.211h30z"/><path d="m0 91.357h30v55.211h-30z"/><path d="m0 182.716h30v55.211h-30z"/><path d="m365.432 0h55.21v30h-55.21z"/><path d="m274.074 0h55.21v30h-55.21z"/><path d="m182.716 0h55.21v30h-55.21z"/><path d="m91.358 0h55.21v30h-55.21z"/><path d="m456.79 0v30h25.21v25.211h30v-55.211z"/><path d="m482 91.357h30v55.211h-30z"/><path d="m482 182.716h30v55.211h-30z"/><path d="m482 274.073h30v55.211h-30z"/><path d="m482 365.432h30v55.211h-30z"/><path d="m482 482h-25.21v30h55.21v-55.211h-30z"/><path d="m365.432 482h55.21v30h-55.21z"/><path d="m274.074 482h55.21v30h-55.21z"/><path d="m0 512h237.926v-237.926h-237.926zm30-207.926h177.926v177.926h-177.926z"/><path d="m359.963 115.934h14.89l-80.528 80.528v-14.89h-30v66.103h66.103v-30h-14.89l80.528-80.529v14.891h30v-66.103h-66.103z"/></g></svg>';
 	var transforming = false;
 	var currShape = null;
-	var curTool = "multi";
+	var curTool = "move";
 	var icons = ['<i class="fas fa-mouse-pointer"></i>', '<i class="far fa-hand-paper"></i>'];
 	var end = false;
 	var lastTime = performance.now(); //The time at which the last point was drawn
@@ -47,19 +45,57 @@
 		y2:0
 	};
 
-	function onStart(evt){
+	var orig = { x: 0, y: 0 };
+	var pressed = false;
+	function clientCoords(evt) {
+		if (evt.touches) {
+			return evt.touches[0];
+		} else {
+			return evt;
+		}
+	}
 
+	function onStart(evt){
+		gtag('event', 'click', { 'event_category': curTool });
+		if(curTool =="hand") {
+			mc.get('pinch').set({ enable: true });
+		}
+		if(!isTouchDevice) {
+			document.getElementById("rect_1").addEventListener('dblclick', fullscreen);
+		} else {
+			document.getElementById("rect_1").addEventListener('touchstart', doubleTouchHandler);
+		}
 	};
 
 	function onQuit(){
 		deactivateCurrentShape();
+		mc.get('pinch').set({ enable: false });
+		if (!isTouchDevice) {
+			document.getElementById("rect_1").removeEventListener('dblclick', fullscreen);
+		} else {
+			document.getElementById("rect_1").removeEventListener('touchstart', doubleTouchHandler);
+		}
 	};
+
+	var touchtime = 0
+	function doubleTouchHandler() {
+		if (touchtime == 0) {
+			touchtime = new Date().getTime();
+		} else {
+			if (((new Date().getTime()) - touchtime) < 400) {
+				fullscreen()
+				touchtime = 0;
+			} else {
+				touchtime = new Date().getTime();
+			}
+		}
+	}
 
 	function start(x, y, evt) {
 
 		//Prevent the press from being interpreted by the browser
 		evt.preventDefault();
-		if(curTool=="multi"){
+		if(curTool=="move"){
 			if(!currShape||(currShape&&!currShape.visible)){
 				var shape  = Tools.createSVGElement("rect");
 
@@ -75,13 +111,15 @@
 				rect.y = y;
 				makeRect = true;
 			}
-		}else{
-			acquireShape(x, y, evt);
+		} else {
+			pressed = true;
+			orig.x = scrollX + clientCoords(evt).clientX;
+			orig.y = scrollY + clientCoords(evt).clientY;
 		}
 	}
 
 	function move(x, y, evt) {
-		if(curTool=="multi"){
+		if(curTool=="move"){
 			if(makeRect){
 				rect['x2'] = x; rect['y2'] = y;
 				if (performance.now() - lastTime > 20 || end) {
@@ -93,6 +131,10 @@
 					lastTime = performance.now();
 				}
 			}
+		} else {
+			if (pressed && !pinching) {
+				window.scrollTo(orig.x - clientCoords(evt).clientX, orig.y - clientCoords(evt).clientY);
+			}
 		}
 		if (evt) evt.preventDefault();
 		lastX = x;
@@ -101,7 +143,8 @@
 
 	function stop(x, y, evt) {
 		evt.preventDefault();
-		if(curTool=="multi"){
+		pressed = false;
+		if(curTool=="move"){
 			if(makeRect){
 				end=true;
 				move(x, y);
@@ -177,8 +220,6 @@
 	}
 
 	function insideRect(x,y,w,h,rx,ry,rx2,ry2){
-		//console.log(x+' ' + y+ ' ' + w+ ' '+h)
-		//console.log(rx+' ' + ry+ ' ' + rx2+ ' '+ry2)
 		if(rx<=x&&ry<=y){
 			if(rx2>=x+w&&ry2>=y+h){
 				if(rx2>rx&&ry2>ry){
@@ -187,19 +228,6 @@
 			}
 		}
 		return false;
-	}
-
-	function acquireShape(x, y, evt) {
-		// evt.target should be the element over which the mouse is...
-		var target = evt.target;
-		if(evt.type.startsWith("touch"))D2isTouch=true;
-		if (evt.type === "touchmove") {
-			// ... the target of touchmove events is the element that was initially touched,
-			// not the one **currently** being touched
-			var touch = evt.touches[0];
-			target = document.elementFromPoint(touch.clientX, touch.clientY);
-		}
-		scanForObject(x,y,target);
 	}
 
 
@@ -238,9 +266,55 @@
 			}
 			lastTime = performance.now();
 		}
-
 	};
 
+	function zoom(scale, x, y) {
+		var oldScale = Tools.getScale();
+		if (Math.abs(scale - oldScale) < 0.05) return
+		var pageX = window.scrollX + pinchStart.centerX
+		var pageY = window.scrollY + pinchStart.centerY
+		var x = pageX / oldScale;
+		var y = pageY / oldScale;
+		var newScale = Tools.setScale(scale);
+		window.scrollTo(
+			scrollX + x * (newScale - oldScale),
+			scrollY + y * (newScale - oldScale)
+		);
+	}
+
+	var mc = new Hammer.Manager(document.getElementById("board"));
+	mc.add(new Hammer.Pinch());
+	mc.get('pinch').set({ enable: false });
+
+	var pinchStart = {}
+	var pinching = false
+	mc.on("pinchstart", event => {
+		pinching = true
+		gtag('event', 'click', { 'event_category': 'pinch' });
+		pinchStart = {
+			scale: Tools.getScale(),
+			scrollX: window.scrollX,
+			scrollY: window.scrollY,
+			centerX: event.center.x,
+			centerY: event.center.y,
+		}
+	});
+
+	var lastEvent = new Date().getTime();
+
+	mc.on("pinch", event => {
+		var now = new Date().getTime();
+		if (now - lastEvent > 50) {
+			zoom(pinchStart.scale * event.scale,
+				event.center.x,
+				event.center.y);
+			lastEvent = now;
+		}
+	});
+
+	mc.on("pinchend", event => {
+		pinching = false
+	});
 
 	function draw(data) {
 		switch (data.type) {
@@ -263,9 +337,8 @@
 								idSelected = (currShape.id==data.id[i]);
 							}
 						}
-						if (!(transforming&&idSelected||elem === null)){ //console.error("Eraser: Tried to delete an element that does not exist.");
+						if (!(transforming&&idSelected||elem === null)){
 							if (idSelected) deactivateCurrentShape();
-							//console.log(data.transform);
 							Tools.drawingEvent=true;
 							elem.setAttribute("transform", data.updates[i].transform);
 						}
@@ -288,153 +361,89 @@
 								idSelected = (currShape.id==data.id);
 							}
 						}
-						if (transforming&&idSelected||elem === null) return; //console.error("Eraser: Tried to delete an element that does not exist.");
+						if (transforming&&idSelected||elem === null) return;
 							if (idSelected) deactivateCurrentShape();
-							//console.log(data.transform);
 							Tools.drawingEvent=true;
 							elem.setAttribute("transform", data.transform);
 					}
 					if(data.data !== undefined){
-						if (elem === null) return; //console.error("Tried to update an element that does not exist.");
+						if (elem === null) return;
 						elem.setAttribute("data-lock", data.data);
 						if(lockOpen && currShape.id==data.id)showLock(data.data)
 					}
 				}
 				break;
 			default:
-				console.error("Eraser: 'delete' instruction with unknown type. ", data);
 				break;
 		}
 	}
 
-	function scanForObject(x,y,target){
-		//console.log(x+ ' '+y);
-		target=document.elementFromPoint((x)*Tools.scale-document.documentElement.scrollLeft, (y)*Tools.scale-document.documentElement.scrollTop);
-		if (target && target !== Tools.svg) {
-			if(!target.id.startsWith("layer")&&target.id!="defs"&&target.id!="rect_1"&&target.id!="cursors"){
-				//elem = svg.getElementById(target.id);
-				//if (elem === null) return;
-				//console.log(target.id);
-				var layer;
-				var c = target.getAttribute("class");
-				if(c && c.startsWith("layer-")){
-					layer = parseInt(c.substr(6));
-					if(!currShape||currShape.id!=target.id||!currShape.selected){
-						initialize(target);
-					}
-				}
-
-			}
-		}
-	}
-
 	function initialize(target,rect) {
-
 		var shape;
-		if(Array.isArray(target)){
-			shape = new Transform(target,rect);
-			msgIds = [];
-			shape.id = [];
-			for(var i = 0;i<target.length;i++){
-				msgIds.push(target[i].id);
-				shape.id.push(target[i].id);
-			};
-			if(wb_comp.list["Measurement"]){
-				wb_comp.list["Measurement"].init(
-					"group",
-					null,
-					shape
-				)
-			}
-		}else{
-			switch ( target.localName ) {
-				case "circle":  shape = new Transform(target,null,hideLock);   break;
-				case "ellipse": shape = new Transform(target,null,hideLock);   break;
-				case "polyline": shape = new Transform(target,null,hideLock);   break;
-				case "text": shape = new Transform(target,null,hideLock);   break;
-				case "image":  shape = new Transform(target,null,hideLock);   break;
-				case "line":    shape = new Transform(target,null,hideLock);   break;
-				case "path":    shape = new Transform(target,null,hideLock);   break;
-				case "polygon": shape = new Transform(target,null,hideLock);  break;
-				case "rect":    shape = new Transform(target,null,hideLock);   break;
-				default:
-					// do nothing for now
-			}
+		shape = new Transform(target,rect);
+		msgIds = [];
+		shape.id = [];
+		for(var i = 0;i<target.length;i++){
+			msgIds.push(target[i].id);
+			shape.id.push(target[i].id);
+		};
 
-			if ( shape != null ){
-				msgIds=shape.id=target.id;
-				if(wb_comp.list["Measurement"]){
-					wb_comp.list["Measurement"].init(
-						target.localName,
-						target
-					)
-				}
-			}
-		}
 		if ( shape != null ) {
 			shape.realize();
 			shape.callback = continueTransforming;
 			deactivateCurrentShape();
             mouser.registerShape(shape);
-            //shape.showHandles(true);
-            //shape.selectHandles(false);
 			currShape = shape;
-			if(!Array.isArray(target)){
-				var locked = target.getAttribute("data-lock");
-				showLock(locked==1);
-			}
 		}
 	};
 
 	deactivateCurrentShape = function(){
 		if(currShape){
-			hideLock();
 			mouser.unregisterShapes();
 			currShape.unrealize();
 			currShape=null;
 		}
 	};
 
-	var lockOpen = false;
-
-	//Show lock
-	function showLock(locked) {
-		lockOpen = true;
-		var elem = document.getElementById("shape-lock");
-		elem.style.display = "block";
-		if(locked){
-			elem.classList.add("locked");
-			document.getElementById("shape-lock-icon").setAttribute("class","fas fa-lock");
-		}else{
-			elem.classList.remove("locked");
-			document.getElementById("shape-lock-icon").setAttribute("class","fas fa-unlock");
-		}
-	};
-
-	//Hide lock
-	function hideLock() {
-		lockOpen = false;
-		document.getElementById("shape-lock").style.display = "none";
-	};
-
 	var svg = Tools.svg;
 
+	var cursorCallback;
+
 	function toggle(elem){
-		var index = 0;
-		if(curTool=="single"){
-			curTool="multi";
-			index=1;
+		var index = 1;
+		if(curTool=="hand"){
+			curTool="move";
+			cursorCallback("default")
+			mc.get('pinch').set({ enable: false });
+			index=0;
 		}else{
-			curTool="single";
+			deactivateCurrentShape();
+			mc.get('pinch').set({ enable: true });
+			curTool="hand";
+			cursorCallback("move")
 		}
 		elem.getElementsByClassName("tool-icon")[0].innerHTML = icons[index];
 	};
+
+	function setCursor(callback) {
+		cursorCallback = callback;
+		callback("default")
+	}
+
+	function fullscreen() {
+		if (document.fullscreenElement) {
+			document.exitFullscreen()
+		} else {
+			document.documentElement.requestFullscreen()
+		}
+	}
 
 	Tools.add({ //The new tool
 		"name": "Transform",
 		"icon": "?",
 		"iconHTML":icons[0],
 		"toggle":toggle,
+		"title": "Move / Pan, Zoom (pinch), Fullscreen (double-click)",
 		"shortcuts": {
             "changeTool":"6"
         },
@@ -446,7 +455,9 @@
 		"draw": draw,
 		"onstart":onStart,
 		"onquit":onQuit,
-		"mouseCursor": "default",
+		"mouseCursor": setCursor,
+		"toggle": toggle,
+		"extra": true
 	});
 
 })(); //End of code isolation

@@ -90,7 +90,6 @@ Mouser.prototype.beginDrag=function(e,x,y){
     this.svgNode.setAttributeNS(null,"display","inline");
 };
 Mouser.prototype.mouseup=function(){
-    console.log("mouseup !!", this.svgNode)
     this.lastPoint=null;
     this.currentNode=null;
     mouser.removeEvent("release",this.svgNode,this);
@@ -114,7 +113,6 @@ Mouser.prototype.mousemove=function(e,x,y){
 Mouser.prototype.getUserCoordinate=function(node,x,y){var svgRoot=svg;var pan=svgRoot.currentTranslate;var zoom=svgRoot.currentScale;var CTM=this.getTransformToElement(node);var iCTM=CTM.inverse();var worldPoint=svg.createSVGPoint();worldPoint.x=(x-pan.x)/zoom;worldPoint.y=(y-pan.y)/zoom;return worldPoint.matrixTransform(iCTM);};
 Mouser.prototype.getTransformToElement=function(node){var CTM=node.getCTM();while((node=node.parentNode)!=svg){CTM=node.getCTM().multiply(CTM);}return CTM;};
 Mouser.prototype.addEvent=function(type,target,object){
-    console.log("Adding event", type, target, object)
     if (type=="press") {
         if(!isTouchDevice){
             target.addEventListener("mousedown",object,false);
@@ -684,7 +682,6 @@ Transform.prototype.init = function(target,rect,hideLock) {
         var svgNode=document.createElementNS(svgns,"polygon");
         var points=[];
         for ( var i = 0; i < this.points.length; i++ ) {
-            //console.log(this.points[i].toString());
             points.push( this.points[i].toString() );
         }
         svgNode.setAttributeNS(null, "points", points.join(" "));

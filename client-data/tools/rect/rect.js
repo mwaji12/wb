@@ -31,7 +31,7 @@
 
 	 var icons = {
 			"Rectangle":{
-			 	icon: "<i class='far fa-square'></i>",
+			 	icon: "<i class='far fa-circle'></i>",
 				isHTML:true,
 				isSVG:false
 			},
@@ -323,13 +323,14 @@
 							<span title = "rectangle" class="tool-icon"><i class="far fa-square"></i></span>
 						</div>
 						<div class="tool-extra submenu-rect" id="submenu-rect-Ellipse">
-							<span title = "ellipse" class="tool-icon">` + icons["Ellipse"].icon + `</span>
+							<span title = "ellipse" class="tool-icon"><i class="far fa-circle"></i></span>
 						</div>`,
 			"listener": menuListener
 		},
 		"mouseCursor": "crosshair",
 		"onstart": onStart,
-		"stylesheet": "tools/rect/rect.css"
+		"stylesheet": "tools/rect/rect.css",
+		"extra": true
 	});
 
 })(); //End of code isolation

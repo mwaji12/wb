@@ -376,6 +376,7 @@ Tools.HTML = {
 			}
 			elem.id = "toolID-" + toolName;
 			if(oneTouch) elem.classList.add("oneTouch");
+			if (Tools.list[toolName].extra) elem.classList.add("extra");
 			if(menu) {
 				Tools.menus[toolName]={};
 				var container = `<div class="popover menu fade show bs-popover-right"
@@ -566,7 +567,13 @@ Tools.change = function (toolName) {
 	} catch (e) {
 		console.error("Unable to update the GUI with the new tool. " + e);
 	}
-	Tools.svg.style.cursor = newtool.mouseCursor || "auto";
+	if (typeof newtool.mouseCursor === "function") {
+		newtool.mouseCursor( cursor => {
+			Tools.svg.style.cursor = cursor;
+		})
+	} else {
+		Tools.svg.style.cursor = newtool.mouseCursor || "auto";
+	}
 	Tools.board.title = Tools.i18n.t(newtool.helpText || "");
 
 	//There is not necessarily already a curTool
@@ -754,7 +761,7 @@ function updateDocumentTitle() {
 
 	document.getElementById("board").addEventListener("wheel", function onWheel(event) {
 		event.preventDefault();
-		zoom(Tools.getScale()+event.deltaY*-0.01, event.clientX, event.clientY);
+		zoom(Tools.getScale()*(1 + event.deltaY*-0.002), event.clientX, event.clientY);
 		Tools.change("Hand")
 	});
 

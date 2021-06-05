@@ -297,7 +297,8 @@
 		"onquit":onQuit,
 		"toggle": toggle,
 		"mouseCursor": "crosshair",
-		"stylesheet": "tools/pencil/pencil.css"
+		"stylesheet": "tools/pencil/pencil.css",
+		"extra": true
 	});
 
 

@@ -103,7 +103,7 @@ html, body, svg {
 	margin-bottom: 0 !important;
 }
 
-@media (min-height: 680px) {
+@media (min-height: 660px) {
 	#tools {
 		margin-top: 56px;
 	}
@@ -134,7 +134,6 @@ html, body, svg {
 	line-height: 52px;
 	border-radius: 3px;
 	max-width: 52px;
-	transition-duration: .2s;
 	overflow: hidden;
 	width: max-content;
 }
@@ -157,7 +156,6 @@ html, body, svg {
 	list-style-position:inside;
 	border:1px solid #eeeeee;
 	text-decoration:none;
-	cursor:pointer;
 	background: #FFF;
 	margin-top: 10px;
 	height: 40px;
@@ -210,7 +208,12 @@ html, body, svg {
   border-color: #999;
   border-width: 2px;
   background-color: rgb(238, 238, 255);
-  /*background: linear-gradient(#96E1FF, #36A2FF);*/
+}
+
+.menu .tool.curTool.extra {
+	background:
+		linear-gradient(to top right, transparent 50%,#999 0) top right/9px 9px no-repeat,
+		rgb(238, 238, 255);;
 }
 
 .menu .tool-icon {
@@ -265,13 +268,11 @@ html, body, svg {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
-	cursor:pointer;
 	height: 48px;
 	padding: 9px 5px 3px 3px;
 }
 
 .popover .tool-extra {
-	cursor:pointer;
 	margin: 0px 5px 0px 0px;
 }
 

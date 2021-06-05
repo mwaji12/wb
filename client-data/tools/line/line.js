@@ -383,6 +383,7 @@
 		// "name": "Straight line",
 		"iconHTML": icons["arrw"].icon,
         "name": "Line",
+		"title": "Lines",
         //"icon": "",
 		"listeners": {
 			"press": startLine,
@@ -409,7 +410,8 @@
 		"draw": draw,
 		"onstart": onStart,
 		"mouseCursor": "crosshair",
-		"stylesheet": "tools/line/line.css"
+		"stylesheet": "tools/line/line.css",
+		"extra": true
 	});
 
 })(); //End of code isolation
