@@ -204,6 +204,7 @@ function moveMarker(message, size, opacity) {
 	cursor.setAttribute("fill", Tools.getColor())
 	cursor.setAttributeNS(null, "cx", message.x-25);
     cursor.setAttributeNS(null, "cy", message.y-25);
+	cursor.setAttributeNS(null, "r", 10 / Tools.getScale());
 	if(opacity) {
 		cursor.style.opacity = opacity
 	}
@@ -269,6 +270,7 @@ function movePointer(message) {
 		updateActivityMonitor(cursor);
 	}
 	cursorLastUse["cursor"+message.socket]=Date.now()
+	cursor.setAttributeNS(null, "r", 10 / Tools.getScale());
 };
 
 function updateActivityMonitor(cursor){

@@ -1,7 +1,7 @@
 /**
  *                        WHITEBOPHIR
  *********************************************************
- * @licstart  The following is the entire license notice for the 
+ * @licstart  The following is the entire license notice for the
  *  JavaScript code in this page.
  *
  * Copyright (C) 2013  Ophir LOJKINE
@@ -30,8 +30,8 @@
 	var img2 = '<svg id="Layer1" enable-background="new 0 0 512 512" height="24" viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg" ><g><path d="m30 30h25.21v-30h-55.21v55.211h30z"/><path d="m0 91.357h30v55.211h-30z"/><path d="m0 182.716h30v55.211h-30z"/><path d="m365.432 0h55.21v30h-55.21z"/><path d="m274.074 0h55.21v30h-55.21z"/><path d="m182.716 0h55.21v30h-55.21z"/><path d="m91.358 0h55.21v30h-55.21z"/><path d="m456.79 0v30h25.21v25.211h30v-55.211z"/><path d="m482 91.357h30v55.211h-30z"/><path d="m482 182.716h30v55.211h-30z"/><path d="m482 274.073h30v55.211h-30z"/><path d="m482 365.432h30v55.211h-30z"/><path d="m482 482h-25.21v30h55.21v-55.211h-30z"/><path d="m365.432 482h55.21v30h-55.21z"/><path d="m274.074 482h55.21v30h-55.21z"/><path d="m0 512h237.926v-237.926h-237.926zm30-207.926h177.926v177.926h-177.926z"/><path d="m359.963 115.934h14.89l-80.528 80.528v-14.89h-30v66.103h66.103v-30h-14.89l80.528-80.529v14.891h30v-66.103h-66.103z"/></g></svg>';
 	var transforming = false;
 	var currShape = null;
-	var curTool = "single";
-	var icons = ["<span style='margin-top:-4px;opacity:.5;background-color:#fff'>"+`<img draggable="false" src='data:image/svg+xml;utf8,`+img1+`' >`+"</span>","<span style='margin-top:-4px;opacity:.5;background-color:#fff'>"+`<img draggable="false" src='data:image/svg+xml;utf8,`+img2+`' >`+"</span>"];
+	var curTool = "multi";
+	var icons = ['<i class="fas fa-mouse-pointer"></i>', '<i class="far fa-hand-paper"></i>'];
 	var end = false;
 	var lastTime = performance.now(); //The time at which the last point was drawn
 	var makeRect = false;
@@ -39,7 +39,7 @@
 	var lastY = 0;
 	var msgIds = null;
 	var gid;
-	
+
 	var rect = {
 		x:0,
 		y:0,
@@ -48,14 +48,10 @@
 	};
 
 	function onStart(evt){
-		document.getElementById("shape-lock").addEventListener("click", lockShape);
+
 	};
 
 	function onQuit(){
-		if(wb_comp.list["Measurement"]){
-			wb_comp.list["Measurement"].resize("small")
-		}
-		document.getElementById("shape-lock").removeEventListener("click", lockShape);
 		deactivateCurrentShape();
 	};
 
@@ -66,13 +62,14 @@
 		if(curTool=="multi"){
 			if(!currShape||(currShape&&!currShape.visible)){
 				var shape  = Tools.createSVGElement("rect");
-					
+
 				shape.id = "transform-rect";
-				
-				shape.setAttribute("stroke", "red");
-				shape.setAttribute("fill", "gray");
-				shape.setAttribute("stroke-width",1);
-				shape.setAttribute("fill-opacity",.1);
+
+				shape.setAttribute("stroke", "#888");
+				shape.setAttribute("fill", "none");
+				shape.setAttribute("stroke-dasharray", "6,6");
+				shape.setAttribute("stroke-width", "1px");
+				shape.setAttribute("vector-effect", "non-scaling-stroke");
 				Tools.svg.appendChild(shape);
 				rect.x = x;
 				rect.y = y;
@@ -84,8 +81,6 @@
 	}
 
 	function move(x, y, evt) {
-		/*Wait 20ms before adding any point to the currently drawing shape.
-		This allows the animation to be smother*/
 		if(curTool=="multi"){
 			if(makeRect){
 				rect['x2'] = x; rect['y2'] = y;
@@ -105,22 +100,23 @@
 	}
 
 	function stop(x, y, evt) {
-		//Add a last point to the shape
 		evt.preventDefault();
 		if(curTool=="multi"){
 			if(makeRect){
 				end=true;
 				move(x, y);
 				end=false;
-				var shape = svg.getElementById("transform-rect");	
+				var shape = svg.getElementById("transform-rect");
 				shape.remove();
 				makeRect = false;
 				var targets = [];
 				var rects = []
 				var rx = rect.x*Tools.scale-document.documentElement.scrollLeft;
 				var rx2 = rect.x2*Tools.scale-document.documentElement.scrollLeft;
+				if(rx2 < rx) [ rx, rx2] = [ rx2, rx ]
 				var ry = rect.y*Tools.scale-document.documentElement.scrollTop;
 				var ry2 = rect.y2*Tools.scale-document.documentElement.scrollTop;
+				if (ry2 < ry) [ry, ry2] = [ry2, ry]
 				$("#layer-"+Tools.layer).find("*").each(
 					function( i, el ) {
 						var r = el.getBoundingClientRect();
@@ -237,7 +233,7 @@
 						wb_comp.list["Measurement"].updateTransform()
 					}
 				}
-				
+
 				Tools.drawAndSend(msg);
 			}
 			lastTime = performance.now();
@@ -247,9 +243,7 @@
 
 
 	function draw(data) {
-		//console.log(JSON.stringify(data));
 		switch (data.type) {
-			//TODO: add the ability to erase only some points in a line
 			case "update":
 				if(Array.isArray(data.id)){
 					for(var i = 0; i<data.id.length;i++){
@@ -319,7 +313,7 @@
 		if (target && target !== Tools.svg) {
 			if(!target.id.startsWith("layer")&&target.id!="defs"&&target.id!="rect_1"&&target.id!="cursors"){
 				//elem = svg.getElementById(target.id);
-				//if (elem === null) return; 
+				//if (elem === null) return;
 				//console.log(target.id);
 				var layer;
 				var c = target.getAttribute("class");
@@ -329,13 +323,13 @@
 						initialize(target);
 					}
 				}
-				
+
 			}
 		}
 	}
 
 	function initialize(target,rect) {
-		
+
 		var shape;
 		if(Array.isArray(target)){
 			shape = new Transform(target,rect);
@@ -366,7 +360,7 @@
 				default:
 					// do nothing for now
 			}
-			
+
 			if ( shape != null ){
 				msgIds=shape.id=target.id;
 				if(wb_comp.list["Measurement"]){
@@ -382,8 +376,8 @@
 			shape.callback = continueTransforming;
 			deactivateCurrentShape();
             mouser.registerShape(shape);
-            shape.showHandles(true);
-            shape.selectHandles(false);
+            //shape.showHandles(true);
+            //shape.selectHandles(false);
 			currShape = shape;
 			if(!Array.isArray(target)){
 				var locked = target.getAttribute("data-lock");
@@ -399,20 +393,6 @@
 			currShape.unrealize();
 			currShape=null;
 		}
-	};
-
-	//Shape locking
-	function lockShape() {
-		var lock = document.getElementById(currShape.id).getAttribute("data-lock");
-		lock = (lock==1?0:1);
-		var msg = {
-			"type": "update",
-			"id": currShape.id,
-			"data":lock,
-			"nostamp":true
-		};
-		showLock(lock);
-		Tools.drawAndSend(msg);
 	};
 
 	var lockOpen = false;
@@ -436,7 +416,7 @@
 		lockOpen = false;
 		document.getElementById("shape-lock").style.display = "none";
 	};
-	
+
 	var svg = Tools.svg;
 
 	function toggle(elem){
@@ -466,7 +446,7 @@
 		"draw": draw,
 		"onstart":onStart,
 		"onquit":onQuit,
-		"mouseCursor": "crosshair",
+		"mouseCursor": "default",
 	});
 
 })(); //End of code isolation

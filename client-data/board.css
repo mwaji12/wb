@@ -127,7 +127,7 @@ html, body, svg {
 	list-style-position:inside;
 	border:2px solid #eeeeee;
 	text-decoration:none;
-	cursor:pointer;
+	cursor:default;
 	background: #FFF;
 	margin-top: 5px;
 	height: 52px;

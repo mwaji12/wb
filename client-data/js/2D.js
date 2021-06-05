@@ -78,6 +78,9 @@ Mouser.prototype.unregisterShapes=function(){for(var i=0;i<this.shapes.length;i+
 Mouser.prototype.handleIndex=function(handle){var result=-1;for(var i=0;i<this.handles.length;i++){if(this.handles[i]===handle){result=i;break;}}return result;};
 Mouser.prototype.shapeIndex=function(shape){var result=-1;for(var i=0;i<this.shapes.length;i++){if(this.shapes[i]===shape){result=i;break;}}return result;};
 Mouser.prototype.beginDrag=function(e,x,y){
+    if(!isTouchDevice) {
+        mouser.addEvent("move", this.svgNode, this);
+    }
     this.currentNode=e.target;
     var svgPoint=this.getUserCoordinate(this.currentNode,x,y);
     this.lastPoint=new Point2D(svgPoint.x,svgPoint.y);
@@ -87,6 +90,7 @@ Mouser.prototype.beginDrag=function(e,x,y){
     this.svgNode.setAttributeNS(null,"display","inline");
 };
 Mouser.prototype.mouseup=function(){
+    console.log("mouseup !!", this.svgNode)
     this.lastPoint=null;
     this.currentNode=null;
     mouser.removeEvent("release",this.svgNode,this);
@@ -110,32 +114,35 @@ Mouser.prototype.mousemove=function(e,x,y){
 Mouser.prototype.getUserCoordinate=function(node,x,y){var svgRoot=svg;var pan=svgRoot.currentTranslate;var zoom=svgRoot.currentScale;var CTM=this.getTransformToElement(node);var iCTM=CTM.inverse();var worldPoint=svg.createSVGPoint();worldPoint.x=(x-pan.x)/zoom;worldPoint.y=(y-pan.y)/zoom;return worldPoint.matrixTransform(iCTM);};
 Mouser.prototype.getTransformToElement=function(node){var CTM=node.getCTM();while((node=node.parentNode)!=svg){CTM=node.getCTM().multiply(CTM);}return CTM;};
 Mouser.prototype.addEvent=function(type,target,object){
+    console.log("Adding event", type, target, object)
     if (type=="press") {
-        //if(!isTouchDevice){
+        if(!isTouchDevice){
             target.addEventListener("mousedown",object,false);
-       // }else{
+        }else{
             target.addEventListener("touchstart",object,{ 'passive': false });
-       // }
+       }
     }
     if (type=="move") {
-       // if(!isTouchDevice){
-            target.addEventListener("mousemove",object,false);
-       // }else{
+       if(!isTouchDevice){
+           target.addEventListener("mousemove",object,false);
+        }else{
             target.addEventListener("touchmove",object,{ 'passive': false });
-       // }
+       }
     }
     if (type=="click") {
+        if (!isTouchDevice) {
             target.addEventListener("click",object,false);
+        }
     }
     if (type=="release") {
-       // if(!isTouchDevice){
+       if(!isTouchDevice){
             target.addEventListener("mouseup",object,false);
             target.addEventListener("mouseleave",object,false);
-       // }else{
+       }else{
             target.addEventListener("touchleave",object,{ 'passive': false });
             target.addEventListener("touchend",object,{ 'passive': false });
             target.addEventListener("touchcancel",object,{ 'passive': false });
-       // }
+       }
     }
 };
 Mouser.prototype.removeEvent=function(type,target,object){
@@ -309,22 +316,9 @@ Shape.prototype.mousedown=function(e,x,y){
             }
         }else{
             if(this.selected){
-                if(this.toggleHandles){
-                    if(this.handlesSelected){
-                        //this.selectHandles(false);
-                        //this.handlesSelected = false;
-                    }else{
-                        this.selectHandles(true);
-                        this.handlesSelected = true;
-                        this.lockSelection=true;
-                    }
                     mouser.beginDrag(e,x,y)
                     this.registerHandles();
                 }else{
-                    this.selectHandles(true);
-                    this.registerHandles();
-                }
-            }else{
                 mouser.unregisterShapes();
                 mouser.registerShape(this);
                 this.showHandles(true);
@@ -655,7 +649,7 @@ Transform.prototype.init = function(target,rect,hideLock) {
             y = (rect.y+window.scrollY)/Tools.scale;
             w = (rect.x2-rect.x)/Tools.scale;
             h = (rect.y2-rect.y)/Tools.scale;
-            b = (D2isTouch?20:10);
+            b = 20 / Tools.getScale();
         }else{
             var transform = target.getAttributeNS(null,"transform");
             if(transform){
@@ -676,7 +670,7 @@ Transform.prototype.init = function(target,rect,hideLock) {
             y = (box.y+window.scrollY)/Tools.scale;
             w = box.width/Tools.scale;
             h = box.height/Tools.scale;
-            b = (D2isTouch?20:10);
+            b = 20 / Tools.getScale();
         }
         //init points
         this.points = [];
@@ -694,22 +688,24 @@ Transform.prototype.init = function(target,rect,hideLock) {
             points.push( this.points[i].toString() );
         }
         svgNode.setAttributeNS(null, "points", points.join(" "));
-        svgNode.setAttributeNS(null,"stroke-width",1);
+        svgNode.setAttributeNS(null,"stroke-width", "1px");
+        svgNode.setAttributeNS(null, "stroke-dasharray", "2,2");
         svgNode.setAttributeNS(null,"fill","gray");
-        svgNode.setAttributeNS(null,"fill-opacity",.1);
-        svgNode.setAttributeNS(null,"stroke","red");
+        svgNode.setAttributeNS(null,"fill-opacity",0);
+        svgNode.setAttributeNS(null,"stroke","#666");
+        svgNode.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
         svg.appendChild(svgNode);
 
         // Call superclass method
         Transform.superclass.init.call(this, svgNode);
-        
+
         //vector stuff and handles
         this.v1 = {x:this.points[1].x-this.points[0].x,y:this.points[1].y-this.points[0].y};
         this.v2 = {x:this.points[3].x-this.points[0].x,y:this.points[3].y-this.points[0].y};
         this.x = this.points[0].x;
         this.y = this.points[0].y;
         this.handles = new Array();
-        
+
         x = this.points[1].x;
         y = (this.points[1].y  +  this.points[2].y )/2;
         this.handles.push( new Handle(x, y, this) );
@@ -720,7 +716,7 @@ Transform.prototype.init = function(target,rect,hideLock) {
         x =  this.points[2].x;
         y =  this.points[2].y;
         this.handles.push( new Handle(x, y, this) );
-        
+
 };
 
 
@@ -737,7 +733,10 @@ Transform.prototype.realize = function() {
         }
         mouser.addEvent("press",this.svgNode,this);
         //mouser.addEvent("click",this.svgNode,this);
-        //mouser.addEvent("move",this.svgNode,this);
+        if(isTouchDevice) {
+            mouser.addEvent("move",this.svgNode,mouser);
+            mouser.addEvent("release", this.svgNode,mouser);
+        }
     }
 };
 
@@ -801,7 +800,7 @@ Transform.prototype.refresh = function() {
         }else{
             var v1 = this.handles[1].point.subtract(center);
             var v2 = center.subtract(this.handles[2].point);
-            
+
             var dot = v1.x*v2.x+v1.y*v2.y;
             var cross = v1.x*v2.y-v2.x*v1.y;
             var D = 1/Math.sqrt((v1.x*v1.x+v1.y*v1.y)*(v2.x*v2.x+v2.y*v2.y));
@@ -821,17 +820,17 @@ Transform.prototype.refresh = function() {
                 }
             }
         }
-        var v = this.handles[1].point.subtract(center);           
+        var v = this.handles[1].point.subtract(center);
         var v2 = new Point2D(v.x*-1.2,v.y*-1.2)
         this.handles[2].point.x=v2.x+center.x;
         this.handles[2].point.y=v2.y+center.y;
         this.handles[2].refresh();
     }
-    
+
     for ( var i = 0; i < this.points.length; i++ ) {
         points.push( this.points[i].toString() );
     }
-    
+
    this.svgNode.setAttributeNS(null, "points", points.join(" "));
    var m = this.generateTransformMatrix();
     if(Array.isArray(this.target)){
@@ -911,7 +910,7 @@ Transform.prototype.selectHandles = function(select) {
 Transform.prototype.showHandles = function(state) {
     for ( var i = 0; i < this.handles.length; i++ )
         this.handles[i].show(state);
-    
+
 };
 
 
@@ -932,12 +931,12 @@ Transform.prototype.handleMouseDown = function(){
             wb_comp.list["Measurement"].updateTransform(
                 this
             )
-        }   
+        }
     }else{
         if(wb_comp.list["Measurement"]){
             wb_comp.list["Measurement"].updateTransform(
             )
-        } 
+        }
     }
 }
 
