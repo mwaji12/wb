@@ -99,14 +99,6 @@ Tools.connect = function() {
 
 	handleMessage(msg);
 
-	if((msg.type=='sync' || msg.subtype=='sync') && Tools.acceptMsgs && !Tools.more){
-		if(Tools.msgs.length>msg.msgCount){
-			var msgs =Tools.msgs.slice(msg.msgCount);
-			console.log("out of sync: " + JSON.stringify(msgs));
-			handleMessage({_children: msgs});
-		}
-	}
-
 	if(loading){
 		var loadingEl = document.getElementById("loadingMessage");
 		loadingEl.classList.add("hidden");
