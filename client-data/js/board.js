@@ -383,6 +383,7 @@ Tools.HTML = {
 				document.getElementById("template").innerHTML = container;
 				Tools.menus[toolName].menu = document.getElementById("popover-"+toolName);
 				document.body.appendChild(Tools.menus[toolName].menu);
+				Tools.menus[toolName].menu.addEventListener("wheel", e => e.preventDefault());
 
 				 (function(){
 
@@ -925,37 +926,6 @@ Tools.applyShortcuts = function(shortcuts,toolName){
 			changeToolList : [],
 			actionList : []
 		}
-		window.addEventListener("keydown", function (e) {
-			for(var i = 0; i < Tools.shortcuts.changeToolList.length; i++){
-				if (e.key === Tools.shortcuts.changeToolList[i].key
-					&& !$(e.target).is("textarea,input[type=text]")
-					&& !$(e.target).is($(".CodeMirror"))
-					&& !$(e.target).is($(".CodeMirror").find("*"))
-				) {
-					Tools.change(Tools.shortcuts.changeToolList[i].toolName);
-					document.activeElement.blur();
-				}
-			}
-			for(var i = 0; i<Tools.shortcuts.actionList.length;i++){
-				var keys = Tools.shortcuts.actionList[i].key.split("-");
-				var key = "";
-				var pass = true;
-				if(keys[0]=="shift"){
-					key = keys[1];
-					pass = event.shiftKey;
-				}else{
-					key = keys[0];
-				}
-				if (pass && e.key === key
-					&& !$(e.target).is("textarea,input[type=text]")
-					&& !$(e.target).is($(".CodeMirror"))
-					&& !$(e.target).is($(".CodeMirror").find("*"))
-
-				) {
-					Tools.shortcuts.actionList[i].action();
-				}
-			}
-		})
 
 		shortcutsInit = true;
 	}

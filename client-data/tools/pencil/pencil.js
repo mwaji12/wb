@@ -289,9 +289,6 @@
 			"move": continueLine,
 			"release": stopLine,
 		},
-		"shortcuts": {
-            "changeTool":"1"
-        },
 		"draw": draw,
 		"onstart":onStart,
 		"onquit":onQuit,

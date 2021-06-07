@@ -241,9 +241,6 @@
 			"move": erase,
 			"release": stopErasing,
 		},
-		"shortcuts": {
-            "changeTool":"5"
-        },
 		"onstart": onStart,
 		"draw": draw,
 		"mouseCursor": "crosshair",

@@ -315,9 +315,6 @@
 		},
 		"draw": draw,
 		"toggle":toggle,
-		"shortcuts": {
-            "changeTool":"3"
-        },
 		"menu":{
 			"content": `<div class="tool-extra submenu-rect" id="submenu-rect-Rectangle">
 							<span title = "rectangle" class="tool-icon"><i class="far fa-square"></i></span>

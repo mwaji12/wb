@@ -390,9 +390,6 @@
 			"move": continueLine,
 			"release": stopLine,
 		},
-		"shortcuts": {
-            "changeTool":"2"
-		},
 		"toggle":toggle,
 		"menu":{
 			"content":`

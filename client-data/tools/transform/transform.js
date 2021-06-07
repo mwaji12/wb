@@ -451,9 +451,6 @@
 		"iconHTML":icons[0],
 		"toggle":toggle,
 		"title": "Move / Pan, Zoom (pinch), Fullscreen (double-click)",
-		"shortcuts": {
-            "changeTool":"6"
-        },
 		"listeners": {
 			"press": start,
 			"move": move,

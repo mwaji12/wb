@@ -107,15 +107,10 @@
 		mc.get('pinch').set({ enable: false });
 	}
 
-	Tools.add({ //The new tool
-		// "name": "Hand",
+	Tools.add({
 		"iconHTML": '<i class="far fa-hand-paper"></i>',
         "name": "Hand",
 		"title": "Pan / Zoom (pinch) / Fullscreen (double-click)",
-		//"icon": "",
-		"shortcuts": {
-            "changeTool":"8"
-        },
 		"listeners": {
 			"press": press,
 			"move": move,

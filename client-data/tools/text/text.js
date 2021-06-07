@@ -215,9 +215,6 @@
 			"listeners": {
 				"press": clickHandler
 			},
-			"shortcuts": {
-				"changeTool":"4"
-			},
 			"onstart":onStart,
 			"onquit":onQuit,
 			"draw": draw,
