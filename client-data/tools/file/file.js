@@ -4,13 +4,19 @@
 		"type": "clear"
 	};
 
+	var codeRefresh;
+
 	function toggle(elem) {
 		if (Tools.menus["File"].menuOpen()) {
 			Tools.menus["File"].show(false);
 			onQuit();
 		} else {
 			Tools.menus["File"].show(true);
-			window.addEventListener("keydown", keyDown,);
+			window.addEventListener("keydown", keyDown);
+			Tools.send({type: "open"})
+			codeRefresh = setInterval(() => {
+				Tools.send({ type: "open" })
+			}, 1000)
 		}
 		if (!menuInitialized) initMenu(elem);
 	};
@@ -24,7 +30,6 @@
 		for (var i = 0; i < btns.length; i++) {
 			var id = btns[i].id.substr(8);
 			if (id.startsWith("digit")) {
-				console.log(btns[i].id)
 				btns[i].addEventListener("wheel", evt => {
 						evt.preventDefault();
 						evt.target.textContent = (new Number(evt.target.textContent) - Math.sign(evt.deltaY*0.01)) % 10;
@@ -48,6 +53,14 @@
 	};
 
 	var currentDigit = 0;
+	var currentCode = null;
+
+	function initCode(code) {
+		if (currentCode != null) return
+		currentCode = (""+code).padStart(3, "0")
+		for (var i = 0; i < 3; i++)
+			document.getElementById("submenu-digit-" + i).textContent = currentCode[i]
+	}
 
 	function changeSelect(p) {
 		for(var i=0; i<3; i++)
@@ -80,6 +93,8 @@
 			currentDigit = currentDigit % 3;
 			document.getElementById("submenu-digit-" + currentDigit).classList.add("selected")
 		}
+		if (timeout) clearTimeout(timeout)
+		timeout = setTimeout(tryLoad, 600)
 		return false
 	}
 
@@ -117,7 +132,7 @@
 		dx = changeX - (evt.clientX || evt.targetTouches[0].clientX);
 		dy = changeY - (evt.clientY || evt.targetTouches[0].clientY);
 
-		newVal = Math.round(changeValue - dx / 16) % 10
+		newVal = Math.round(changeValue - dy / 40) % 10
 		changeElem.textContent = newVal
 		if (evt.buttons == 0) {
 			resetChange()
@@ -132,12 +147,11 @@
 			new Number(document.getElementById("submenu-digit-0").textContent.trim() +
 			document.getElementById("submenu-digit-1").textContent.trim() +
 			document.getElementById("submenu-digit-2").textContent.trim())
-		console.log(value)
+		Tools.send({ type: "join", code: value })
 	}
 
 	var menuButtonClicked = function () {
 		curTool = this.id.substr(8);
-		console.log(curTool)
 		gtag('event', 'click', { 'event_category': curTool });
 		Tools.menus["File"].show(false);
 		switch(curTool) {
@@ -152,6 +166,11 @@
 			case "clear":
 				Tools.clearBoard(false);
 				break;
+			case "code":
+				initCode(data.code);
+				break;
+			case "admit":
+				window.location = "/boards/"+data.board+"#500,500,1.0"
 			default:
 				console.error("Clear: 'clear' instruction with unknown type. ", data);
 				break;
@@ -197,8 +216,12 @@
 	}
 
 	function onQuit() {
+		currentCode = null;
 		window.removeEventListener("keydown", keyDown);
 		changeSelect(null)
+		if(codeRefresh) {
+			clearInterval(codeRefresh)
+		}
 	}
 
 	Tools.add({
@@ -217,13 +240,13 @@
 							<span class="tool-icon"><i class="far fa-file"></i></span>
 						</div>
 						<div class="tool-extra submenu-file digit" id="submenu-digit-0" title="Sharing code active when the menu is open">
-							4
+
 						</div>
 						<div class="tool-extra submenu-file digit" id="submenu-digit-1" title="Sharing code active when the menu is open">
-							6
+
 						</div>
 						<div class="tool-extra submenu-file digit" id="submenu-digit-2" title="Sharing code active when the menu is open">
-							3
+
 						</div>`,
 			"listener": menuListener
 		},

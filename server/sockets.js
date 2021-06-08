@@ -125,6 +125,9 @@ function socketConnection(socket) {
 	});
 }
 
+var joinable = {}
+var attempts = {}
+
 function handleMsg(board, message, socket) {
 
 	if(message.type != "c" && message.type != "e"){
@@ -141,7 +144,26 @@ function handleMsg(board, message, socket) {
 				message.socket=socket.id;
 	}
 
-	if(message.type == "clear" || message.type == "undo" || message.type == "redo"){
+	if(message.type == "open") {
+		var code = Math.abs(hashCode(board.name)) % 1000
+		socket.emit("broadcast", { type: "code", code, tool: "File" });
+		if(joinable[code]) {
+			clearTimeout(joinable[code].timeout)
+		}
+		joinable[code] = {
+			board,
+			timeout:
+				setTimeout(() => {
+					delete joinable[code]
+				}, 2000)
+			}
+	} else if(message.type == "join") {
+		if (!attempts[socket] && joinable[message.code] && joinable[message.code].board.name != board.name) {
+			socket.emit("broadcast", { type: "admit", board: joinable[message.code].board.name, tool: "File" });
+			attempts[socket] = true
+			setTimeout(() => delete attempts[socket], 2000)
+		}
+	} else if(message.type == "clear" || message.type == "undo" || message.type == "redo"){
 
 		/*Actions requiring sync. There is no way to enforce order of events with a broadcast
 		* system. Thus, it is possible that clients sometimes may see an inconsistent picture.
@@ -210,6 +232,12 @@ function generateUID(prefix, suffix) {
 	return uid;
 }
 
+function hashCode(s) {
+	let h;
+	for (let i = 0; i < s.length; i++)
+		h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+	return h;
+}
 
 if (exports) {
 	exports.start = startIO;
