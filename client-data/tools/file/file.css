@@ -8,3 +8,11 @@
     max-width: 24px;
     text-align: center;
 }
+
+.digit.selected {
+    border-bottom: 2px solid #666;
+}
+
+.digit:hover {
+    border-bottom: 2px solid #999;
+}

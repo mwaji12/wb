@@ -7,8 +7,10 @@
 	function toggle(elem) {
 		if (Tools.menus["File"].menuOpen()) {
 			Tools.menus["File"].show(false);
+			onQuit();
 		} else {
 			Tools.menus["File"].show(true);
+			window.addEventListener("keydown", keyDown,);
 		}
 		if (!menuInitialized) initMenu(elem);
 	};
@@ -34,7 +36,10 @@
 				)
 				btns[i].addEventListener("touchstart", startChange)
 				btns[i].addEventListener("mousedown", startChange)
-				btns[i].addEventListener("click", e => e.preventDefault() )
+				btns[i].addEventListener("click", e => {
+					e.preventDefault()
+					changeSelect(e.target)
+				 })
 			} else {
 				btns[i].addEventListener("click", menuButtonClicked);
 			}
@@ -43,6 +48,19 @@
 	};
 
 	var currentDigit = 0;
+
+	function changeSelect(p) {
+		for(var i=0; i<3; i++)
+			document.getElementById("submenu-digit-" + i).classList.remove("selected")
+		if(p==null) {
+			currentDigit = 0;
+			return
+		}
+		if(p instanceof Number)
+			p = document.getElementById("submenu-digit-" + p)
+		p.classList.add("selected")
+		currentDigit = p.id.substr(14)
+	}
 
 	function keyDown(evt) {
 		evt.preventDefault();
@@ -55,9 +73,12 @@
 		}
 
 		if (code >= 0) {
-			document.getElementById("submenu-digit-"+currentDigit).textContent = code
+			var elem = document.getElementById("submenu-digit-" + currentDigit)
+			elem.textContent = code
+			elem.classList.remove("selected")
 			currentDigit++;
 			currentDigit = currentDigit % 3;
+			document.getElementById("submenu-digit-" + currentDigit).classList.add("selected")
 		}
 		return false
 	}
@@ -67,11 +88,12 @@
 	var changeX;
 	var changeY;
 	function startChange(evt) {
+		changeSelect(evt.target)
 		evt.preventDefault();
-		changeValue = new Number(evt.target.textContent)
+		changeValue = new Number(evt.target.textContent)+100
 		changeElem = evt.target;
-		changeX = evt.clientX || evt.targetTouches[0].clientX;
-		changeY = evt.clientY || evt.targetTouches[0].clientY;
+		changeX = evt.clientX || evt.targetTouches[0] && evt.targetTouches[0].clientX;
+		changeY = evt.clientY || evt.targetTouches[0] && evt.targetTouches[0].clientY;
 		document.addEventListener("mousemove", changeMove)
 		document.addEventListener("touchmove", changeMove)
 		document.addEventListener("touchend", resetChange)
@@ -79,7 +101,9 @@
 		document.addEventListener("touchcancel", resetChange)
 	}
 
-	function resetChange() {
+	function resetChange(evt) {
+		if(evt && evt.type.startsWith("touch") )
+			changeSelect(null)
 		document.removeEventListener("mousemove", changeMove)
 		document.removeEventListener("touchmove", changeMove)
 		document.removeEventListener("touchend", resetChange)
@@ -93,7 +117,8 @@
 		dx = changeX - (evt.clientX || evt.targetTouches[0].clientX);
 		dy = changeY - (evt.clientY || evt.targetTouches[0].clientY);
 
-		changeElem.textContent = Math.min(9, Math.max(0, Math.round(changeValue - dx / 16)));
+		newVal = Math.round(changeValue - dx / 16) % 10
+		changeElem.textContent = newVal
 		if (evt.buttons == 0) {
 			resetChange()
 		}
@@ -158,6 +183,7 @@
 	}
 
 	function menuListener(elem, onButton, onMenu, e) {
+		if(e.target.id=="rect_1") onQuit()
 		if (!onMenu && !onButton) {
 			e.stopPropagation();
 			return true;
@@ -168,11 +194,11 @@
 	function onStart() {
 		gtag('event', 'click', { 'event_category': 'file' });
 		toggle();
-		window.addEventListener("keydown", keyDown,);
 	}
 
 	function onQuit() {
 		window.removeEventListener("keydown", keyDown);
+		changeSelect(null)
 	}
 
 	Tools.add({
@@ -180,6 +206,9 @@
 		"name": "File",
 		"title": "Clear / New / Share",
 		"toggle": toggle,
+		"listeners": {
+			"press": onQuit
+		},
 		"menu": {
 			"content": `<div class="tool-extra submenu-file" id="submenu-clear">
 							<span class="tool-icon"><i class="far fa-trash-alt"></i></span>

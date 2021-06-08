@@ -109,6 +109,12 @@ html, body, svg {
 	}
 }
 
+@media (max-height: 660px) {
+	#tools {
+		margin-top: 20px;
+	}
+}
+
 @keyframes minimize {
 	to {max-width:100%}
 }
