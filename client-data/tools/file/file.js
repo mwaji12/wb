@@ -157,7 +157,26 @@
 		switch(curTool) {
 			case "clear": clearBoard(); break;
 			case "new": createNew(); break;
-
+			case "png":
+				var minX=Number.MAX_VALUE, maxX=0, minY=Number.MAX_VALUE, maxY=0
+				$("#layer-" + Tools.layer).find("*").each(
+					function (i, el) {
+						var r = el.getBoundingClientRect();
+						console.log(r)
+						if(r.x < minX) minX = r.x;
+						if(r.x + r.width > maxX) maxX = r.x + r.width;
+						if (r.y < minY) minY = r.y;
+						if (r.y + r.height > maxY) maxY = r.y + r.height;
+					})
+				var options = {
+					backgroundColor: "white",
+					top: (window.scrollY + minY) / Tools.getScale() - 20,
+					left: (window.scrollX + minX) / Tools.getScale() - 20,
+					width: (maxX - minX) / Tools.getScale() + 40,
+					height: (maxY - minY) / Tools.getScale() +40
+				}
+				console.log(options)
+				saveSvgAsPng(document.getElementById("canvas"), "whiteboard-"+currentCode+".png", options); break;
 		}
 	};
 
@@ -233,11 +252,14 @@
 			"press": onQuit
 		},
 		"menu": {
-			"content": `<div class="tool-extra submenu-file" id="submenu-clear">
+			"content": `<div class="tool-extra submenu-file" id="submenu-clear" title="Clear Board">
 							<span class="tool-icon"><i class="far fa-trash-alt"></i></span>
 						</div>
-						<div class="tool-extra submenu-file" id="submenu-new">
+						<div class="tool-extra submenu-file" id="submenu-new" title="New Board">
 							<span class="tool-icon"><i class="far fa-file"></i></span>
+						</div>
+						<div class="tool-extra submenu-file" id="submenu-png" title="Export as PNG">
+							<span class="tool-icon"><i class="fas fa-file-export"></i></span>
 						</div>
 						<div class="tool-extra submenu-file digit" id="submenu-digit-0" title="Sharing code active when the menu is open">
 
