@@ -206,21 +206,17 @@
 		return elem;
 	}
 
-	if(!isTouchDevice) {
-		Tools.add({ //The new tool
-			// "name": "Text",
-			"iconHTML": '<i class="fa fa-font"></i>',
-			"name": "Text",
-			//"icon": "",
-			"listeners": {
-				"press": clickHandler
-			},
-			"onstart":onStart,
-			"onquit":onQuit,
-			"draw": draw,
-			"mouseCursor": "text",
-			"stylesheet": "tools/text/text.css"
-		});
-	}
+	Tools.add({ //The new tool
+		"iconHTML": !isTouchDevice ? '<i class="fa fa-font"></i>' : undefined,
+		"name": "Text",
+		"listeners": {
+			"press": clickHandler
+		},
+		"onstart":onStart,
+		"onquit":onQuit,
+		"draw": draw,
+		"mouseCursor": "text",
+		"stylesheet": "tools/text/text.css"
+	});
 
 })(); //End of code isolation

@@ -513,12 +513,14 @@ Tools.add = function (newTool) {
 	}
 
 	//Add the tool to the GUI
-	Tools.HTML.addTool(newTool.name,
-		newTool.icon,
-		newTool.iconHTML,
-		newTool.isExtra,
-		newTool.oneTouch,
-		newTool.menu);
+	if(newTool.icon || newTool.iconHTML) {
+		Tools.HTML.addTool(newTool.name,
+			newTool.icon,
+			newTool.iconHTML,
+			newTool.isExtra,
+			newTool.oneTouch,
+			newTool.menu);
+		}
 
 	//There may be pending messages for the tool
 	var pending = Tools.pendingMessages[newTool.name];
