@@ -179,7 +179,7 @@ BoardData.prototype.update = function (id, message) {
 		var oldData = {};
 		for (var i in newData) {
 			var sz;
-			if(!(sz = this.isValid(message, "update", i, newData[i]))) return;
+			if(!(sz = this.isValid(message, "update", i, newData[i]) || (i == "txt" && newData[i] == ""))) return;
 			diff += sz - memorySizeOf( data[i] )
 			if(data[i])
 				oldData[i]=data[i]

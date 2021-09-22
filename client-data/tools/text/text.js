@@ -127,7 +127,7 @@
 			startEdit();
 		}
 		if (performance.now() - curText.lastSending > 100) {
-			if (curText.sentText !== input.value) {
+			if (curText.sentText == "" || curText.sentText !== input.value) {
 				//If the user clicked where there was no text, then create a new text field
 				if(curText.id==0){
 					curText.id = Tools.generateUID("t"); //"t" for text
