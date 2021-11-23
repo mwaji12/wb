@@ -25,265 +25,430 @@
  */
 
 
-(function calculator() { //Code isolation
+<div id="calculator" style="width: 600px; height: 400px;"></div>
 
-	var toggle = 0;
-	var opened = false;
-	var msg = {
-		"type": "e",
-		"state":"",
-	};
-	var win = {
-		toggle : 0,
-		max:false
-	 };
+<script>
+  var elt = document.getElementById('calculator');
+  var calculator = Desmos.GraphingCalculator(elt);
+  calculator.setExpression({ id: 'graph1', latex: 'y=x^2' });
+</script>
 
-	var elt = document.getElementById('calculator');
-	var container = document.getElementById('calc-container');
-	var calculator = Desmos.GraphingCalculator(elt);
-	var lastState;
-	calculator.observeEvent('change', relayChanges);
-	
+var elt = document.getElementById('my-calculator');
+var calculator = Desmos.GraphingCalculator(elt);
 
-    //elt.style.width = '600px';
-	//elt.style.height = '400px';
-	//calculator.resize();
+// Save the current state of a calculator instance
+var state = calculator.getState();
 
-	function toggleCalc() {
-		var btn = document.getElementById("toolID-Calculator");
-		if(toggle){
-			container.style.display = "none";
-			btn.style.backgroundColor = "";
-			btn.style.borderRadius = "";
-			toggle=0;
-		}else{
-			Tools.focusWindow(container);
-			if(win.max)pos_max_win()
-			else pos_win()
-			btn.style.backgroundColor = "#eeeeff";
-			btn.style.borderRadius = "8px";
-			container.style.display = "block";
-			toggle=1;
-			if(opened) return;
-			opened = true;
-			init_window();
-			
-		}
-	};
+// Use jQuery to post a state to your server for permanent storage
+$.post('/myendpoint', JSON.stringify(state));
 
-	function relayChanges() {
-		msg.state = calculator.getState();
-		diff(msg,lastState,msg.state);
-		lastState = msg.state;
-		Tools.send(msg,"Calculator");
-	};
+// Load a state into a calculator instance
+calculator.setState(state);
 
-	//diff and merge "should" allow people to work on different expressions without interrupting each other
-	function diff(state){
-		const [olist,nlist] = getLists(lastState,state);
-		let prevExpressions = {};
-		let ids = new Set();
-		olist.forEach(
-			expression => {
-				prevExpressions[expression.id]=expression
-				ids.add(expression.id);
-			}
-		);
-		nlist.forEach(
-			expression => {
-				if(JSON.stringify(expression)==JSON.stringify(prevExpressions[expression.id])){
-					ids.delete(expression.id);
-				}else{
-					ids.add(expression.id);
-				}
-			}
-		);
-		msg.diff = Array.from(ids);
-	};
+// Reset the calculator to a blank state
+calculator.setBlank();
 
-	function merge(state,newDiff){
-		const [olist,nlist] = getLists(lastState,state);
-		let newExpressions = {};
-		olist.forEach(
-			expression => {
-				if(!newDiff.includes(expression.id)){
-					newExpressions[expression.id]=expression
-				}
-			}
-		);
-		nlist.forEach(
-			expression => {
-				if(newDiff.includes(expression.id) || !newExpressions[expression.id]){
-					newExpressions[expression.id]=expression
-				}
-			}
-		);
-		if(!state.expressions)state.expressions = {};
-		state.expressions.list = [];
-		for (const id in newExpressions) {
-			state.expressions.list.push(newExpressions[id])
-		}
-	};
+// Save the current state of a calculator instance
+var newDefaultState = calculator.getState();
 
-	function getLists(
-		{
-			expressions: {
-				list: olist = []
-			} = {}
-		} = {},
-		{
-			expressions: {
-				list: nlist = []
-			} = {}
-		}
-	){
-		return [olist,nlist]
-	};
+// Set a new default state to match the current state
+calculator.setDefaultState(newDefaultState);
 
-	function draw(data) {
-		var elem;
-		switch (data.type) {
-			case "e":
-				calculator.unobserveEvent('change');
-				merge(data.state,data.diff);
-				calculator.setState(data.state);
-				lastState = data.state;
-				calculator.observeEvent('change', relayChanges);
-				break;
-			default:
-				console.error("Clear: 'calc' instruction with unknown type. ", data);
-				break;
-		}
-	}
+// From this point forward the "Delete All" button will be replaced with a "Reset"
+// button that will set the calculator to the state stored in newDefaultState,
+// and the "home" zoom button will restore the viewport to that of newDefaultState.
 
-	function init_window(){
-		document.getElementById("close-calc").addEventListener("click", toggleCalc);
-		document.getElementById("max-calc").addEventListener("click", toggleMax);
-		dragElement(document.getElementById("calc-container"));
-		function dragElement(elmnt) {
+// Capture a full size screenshot of the graphpaper
+var fullsize = calculator.screenshot();
 
-			var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-			var header = document.getElementById(elmnt.id + "-header")
-			if (document.getElementById(header)) {
-			/* if present, the header is where you move the DIV from:*/
-			//	if(!isTouchDevice){
-					header.addEventListener("mousedown",dragMouseDown,false);
-				//}else{
-					header.addEventListener("touchstart",dragMouseDown,{ 'passive': false });
-				//}
-			} else {
-				/* otherwise, move the DIV from anywhere inside the DIV:*/
-				//if(!isTouchDevice){
-					header.addEventListener("mousedown",dragMouseDown,false);
-				//}else{
-					header.addEventListener("touchstart",dragMouseDown,{ 'passive': false });
-				//}
-			}
-		
-			function dragMouseDown(e) {
-				e = e || window.event;
-				if(win.max)return;
-				//e.preventDefault();
-				// get the mouse cursor position at startup:
-				if(e.type.startsWith("touch")){
-					if (e.changedTouches.length === 1) {
-						var touch = e.changedTouches[0];
-						pos3 = touch.pageX
-						pos4 = touch.pageY
-					}
-				}else{
-					pos3 = e.clientX;
-					pos4 = e.clientY;
-				}
-				Tools.focusWindow(elmnt);
-				// call a function whenever the cursor moves:
-				//if(!isTouchDevice){
-					document.addEventListener("mouseup",closeDragElement,false);
-					document.addEventListener("mousemove",elementDrag,false);
-				//}else{
-					document.addEventListener("touchend",closeDragElement,{ 'passive': false });
-					document.addEventListener("touchmove",elementDrag,{ 'passive': false });
-				//}
-			
-			}
-		
-			function elementDrag(e) {
-				e = e || window.event;
-				e.preventDefault();
-				// calculate the new cursor position:
-				if(e.type.startsWith("touch")){
-					if (e.changedTouches.length === 1) {
-						var touch = e.changedTouches[0];
-						pos1 = pos3 - touch.pageX;
-						pos2 = pos4 - touch.pageY;
-						pos3 = touch.pageX
-						pos4 = touch.pageY
-					}
-				}else{
-					pos1 = pos3 - e.clientX;
-					pos2 = pos4 - e.clientY;
-					pos3 = e.clientX;
-					pos4 = e.clientY;
-				}
-				
-				// set the element's new position:
-				elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-				elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-			}
-		
-			function closeDragElement(e) {
-				//e.preventDefault();
-			/* stop moving when mouse button is released:*/
-				document.removeEventListener("mouseup",closeDragElement,false);
-				document.removeEventListener("mousemove",elementDrag,false);
-				document.removeEventListener("touchend",closeDragElement,false);
-				document.removeEventListener("touchmove",elementDrag,false);
-			}
-		}
-	};
+// Capture a double resolution screenshot of the graphpaper designed to
+// be displayed at 200px by 200px
+var thumbnail = calculator.screenshot({
+  width: 200,
+  height: 200,
+  targetPixelRatio: 2
+});
 
-	function toggleMax() {
-		if(win.max){
-			pos_win();
-			win.max=false;
-		}else{
-			pos_max_win()
-			win.max=true;
-		}
-	};
+// Append the thumbnail image to the current page
+var img = document.createElement('img');
+// Note: if width and height are not set, the thumbnail
+// would display at 400px by 400px since it was captured
+// with targetPixelRatio: 2.
+img.width = 200;
+img.height = 200;
+img.src = thumbnail;
+document.body.appendChild(img);
 
-	function pos_win(){
-		container.style.position = "";
-		container.style.zIndex= "";
-		container.style.left =  (win.l? win.l - document.documentElement.scrollLeft: (65+document.documentElement.scrollLeft)) + "px";
-		container.style.top =   (win.t? win.t - document.documentElement.scrollTop: (19+document.documentElement.scrollTop)) + "px"; 
-		container.style.width = ''; 
-		container.style.height = '';
-	};
-	function pos_max_win(){
-		container.style.position = "fixed";
-		container.style.zIndex=100;
-		win.l = $(container).offset().left;
-		win.t = $(container).offset().top;
-		container.style.left =  '0px'; 
-		container.style.top =  '0px'; 
-		container.style.width = '100%'; 
-		container.style.height = '100%';
-	};
+// Callback
+function setImageSrc(data) {
+  var img = document.getElementById('my-image');
+  img.src = data;
+}
 
+// Take a screenshot of an exact region without regard for the aspect ratio
+calculator.asyncScreenshot(
+  {
+    mode: 'stretch',
+    mathBounds: { left: -5, right: 5, bottom: -20, top: 0 }
+  },
+  setImageSrc
+);
 
-	Tools.add({ //The new tool
-		"name": "Calculator",
-		"icon": "🗑",
-		"iconHTML":"<i id='calc-icon' style='color: #FF8C00;margin-top:7px' class='fas fa-calculator'></i>",
-		//"shortcut": "e",
-		"listeners": {},
-		"draw": draw,
-		"oneTouch":true,
-		"isExtra":true,
-		"onstart":toggleCalc,
-		"mouseCursor": "crosshair",
-		"stylesheet": "tools/calculator/calculator.css"
-	});
+// Show -5 to 5 on the x-axis and preserve the aspect ratio
+calculator.asyncScreenshot(
+  {
+    mode: 'preserveX',
+    width: 500,
+    height: 300,
+    mathBounds: { left: -5, right: 5 }
+  },
+  setImageSrc
+);
 
-})(); //End of code isolation
+// Use the smallest bounding box containing the current viewport and preserve the aspect ratio
+calculator.asyncScreenshot(setImageSrc);
+
+// Preserve the aspect ratio if the axes are square, otherwise show the exact region
+var opts = {
+  mode: calculator.isProjectionUniform() ? 'contain' : 'stretch',
+  width: 500,
+  height: 300,
+  mathBounds: { left: -5, right: 5, bottom: -20, top: 0 }
+};
+calculator.asyncScreenshot(opts, setImageSrc);
+
+function persistState(state) {
+  /* Persist state to your backend */
+}
+
+// This example uses the throttle function from underscore.js to limit
+// the rate at which the calculator state is queried and persisted.
+throttledSave = _.throttle(
+  function() {
+    persistState(calculator.getState());
+    console.log('Save occurred');
+  },
+  1000,
+  { leading: false }
+);
+
+calculator.observeEvent('change', function() {
+  console.log('Change occurred');
+  throttledSave();
+});
+
+//Define a variable m.  Doesn't graph anything.
+calculator.setExpression({ id: 'm', latex: 'm=2' });
+
+//Draw a red line with slope of m through the origin.
+//Because m = 2, this line will be of slope 2.
+calculator.setExpression({ id: 'line1', latex: 'y=mx', color: '#ff0000' });
+
+//Updating the value of m will change the slope of the line to 3
+grapher.setExpression({ id: 'm', latex: 'm=3' });
+
+//Inequality to shade a circle at the origin
+calculator.setExpression({ id: 'circle1', latex: 'x^2 + y^2 < 1' });
+
+//Restrict the slider for the m variable to the integers from 1 to 10
+calculator.setExpression({
+  id: 'm',
+  sliderBounds: { min: 1, max: 10, step: 1 }
+});
+//Table with three columns. Note that the first two columns have explicitly
+//specified values, and the third column is computed from the first.
+calculator.setExpression({
+  type: 'table',
+  columns: [
+    {
+      latex: 'x',
+      values: ['1', '2', '3', '4', '5']
+    },
+    {
+      latex: 'y',
+      values: ['1', '4', '9', '16', '25'],
+      dragMode: Desmos.DragModes.XY
+    },
+    {
+      latex: 'x^2',
+      color: Desmos.Colors.BLUE,
+      columnMode: Desmos.ColumnModes.LINES
+    }
+  ]
+});
+
+expression_states.forEach(function(expression_state) {
+  calculator.setExpression(expression_state);
+});
+
+// Add an expression
+calculator.setExpression({ id: 'parabola', latex: 'y=x^2' });
+
+// Remove it
+calculator.removeExpression({ id: 'parabola' });
+
+expression_states.forEach(function(expression_state) {
+  calculator.removeExpression(expression_state);
+});
+
+calculator.getExpressions();
+/*
+[
+  {
+    id: "1",
+    type: "expression",
+    latex: "\left(1,2\right)",
+    pointStyle: "POINT",
+    hidden: false,
+    secret: false,
+    color: "#c74440",
+    parametricDomain: {min: "0", max: "1"},
+    dragMode: "X",
+    label: "my point",
+    showLabel: true
+  },
+  ...
+]
+*/
+
+{
+  isGraphable: Boolean, // Does the expression represent something that can be plotted?
+  isError: Boolean, // Does the expression result in an evaluation error?
+  errorMessage?: String // The (localized) error message, if any
+  evaluationDisplayed?: Boolean, // Is evaluation information displayed in the expressions list?
+  evaluation?: { type: 'Number', value: Number } |
+               { type: 'ListOfNumber', value: Number[] } // numeric value(s)
+}
+
+calculator.observe('expressionAnalysis', function() {
+  for (var id in calculator.expressionAnalysis) {
+    var analysis = calculator.expressionAnalysis[id];
+    if (analysis.isGraphable) console.log('This expression can be plotted.');
+    if (analysis.isError)
+      console.log(`Expression '${id}': ${analysis.errorMessage}`);
+    if (analysis.evaluation) console.log(`value: ${analysis.evaluation.value}`);
+  }
+});
+
+var calculator = Desmos.GraphingCalculator(elt);
+
+calculator.setExpression({ id: 'a-slider', latex: 'a=1' });
+var a = calculator.HelperExpression({ latex: 'a' });
+
+calculator.setExpression({ id: 'list', latex: 'L=[1, 2, 3]' });
+var L = calculator.HelperExpression({ latex: 'L' });
+
+a.observe('numericValue', function() {
+  console.log(a.numericValue);
+});
+
+L.observe('listValue', function() {
+  console.log(L.listValue);
+});
+
+// Set the x axis to have arrows on both ends
+calculator.updateSettings({ xAxisArrowMode: Desmos.AxisArrowModes.BOTH });
+
+// In calc1, users will be allowed to create secret folders and see
+// their contents.
+var calc1 = Desmos.GraphingCalculator(elt1, { administerSecretFolders: true });
+
+// By default, secret folders are hidden from users.
+var calc2 = Desmos.GraphingCalculator(elt2);
+
+// Set xAxisLabel
+calculator.updateSettings({ xAxisLabel: 'Time' });
+
+// Observe the value of `xAxisLabel`, and log a message when it changes.
+calculator.settings.observe('xAxisLabel', function() {
+  console.log(calculator.settings.xAxisLabel);
+});
+calculator.updateSettings({ randomSeed: 'my-random-seed' });
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+var elt = document.getElementById('calculator');
+var calculator = Desmos.GraphingCalculator(elt, { autosize: false });
+
+// Resize the calculator explicitly.
+elt.style.width = '600px';
+elt.style.height = '400px';
+calculator.resize();
+
+//Only show the first quadrant
+calculator.setMathBounds({
+  left: 0,
+  right: 10,
+  bottom: 0,
+  top: 10
+});
+
+{
+  mathCoordinates: {
+    top: Number,
+    bottom: Number,
+    left: Number,
+    right: Number,
+    width: Number,
+    height: Number
+  },
+  pixelCoordinates: {
+    top: Number,
+    bottom: Number,
+    left: Number,
+    right: Number,
+    width: Number,
+    height: Number
+  }
+}
+
+calculator.observe('graphpaperBounds', function() {
+  var pixelCoordinates = calculator.graphpaperBounds.pixelCoordinates;
+  var mathCoordinates = calculator.graphpaperBounds.mathCoordinates;
+
+  var pixelsPerUnitY = pixelCoordinates.height / mathCoordinates.height;
+  var pixelsPerUnitX = pixelCoordinates.width / mathCoordinates.width;
+
+  console.log('Current aspect ratio: ' + pixelsPerUnitY / pixelsPerUnitX);
+});
+
+// Find the pixel coordinates of the graphpaper origin:
+calculator.mathToPixels({ x: 0, y: 0 });
+
+// Find the math coordinates of the mouse
+var calculatorRect = calculatorElt.getBoundingClientRect();
+document.addEventListener('mousemove', function(evt) {
+  console.log(
+    calculator.pixelsToMath({
+      x: evt.clientX - calculatorRect.left,
+      y: evt.clientY - calculatorRect.top
+    })
+  );
+});
+
+// Add three different observers to the 'xAxisLabel' property
+calculator.settings.observe('xAxisLabel.foo', callback1);
+calculator.settings.observe('xAxisLabel.bar', callback2);
+calculator.settings.observe('xAxisLabel.baz', callback3);
+
+// Stop firing `callback2` when the x-axis label changes
+calculator.settings.unobserve('xAxisLabel.bar');
+
+// Remove the two remaining observers
+calculator.settings.unobserve('xAxisLabel');
+
+calculator.setExpression({
+  id: '1',
+  latex: 'y=x',
+  color: Desmos.Colors.BLUE
+});
+
+calculator.setExpression({
+  id: '2',
+  latex: 'y=x + 1',
+  color: '#ff0000'
+});
+
+calculator.setExpression({
+  id: '3',
+  latex: 'y=sin(x)',
+  color: calculator.colors.customBlue
+});
+
+// Make a dashed line
+calculator.setExpression({
+  id: 'line',
+  latex: 'y=x',
+  lineStyle: Desmos.Styles.DASHED
+});
+
+// This will render with normal movable point styling, because named point
+// assignments result in points with a `dragMode` of `XY` by default
+calculator.setExpression({
+  id: 'pointA',
+  latex: 'A=(1,2)',
+  pointStyle: Desmos.Styles.CROSS
+});
+
+// Now point A will render with `CROSS` styling
+calculator.setExpression({
+  id: 'pointA',
+  dragMode: Desmos.DragModes.NONE
+});
+
+// Point B will render as a hole
+calculator.setExpression({
+  id: 'pointB',
+  latex: 'B=(2,4)',
+  dragMode: Desmos.DragModes.NONE,
+  pointStyle: Desmos.Styles.OPEN
+});
+
+// This point will render with `CROSS` styling, because the default
+// `dragMode` for an unassigned point with numeric values is `NONE`
+calculator.setExpression({
+  id: 'pointC',
+  latex: '(7,5)',
+  pointStyle: Desmos.Styles.CROSS
+});
+
+calculator.updateSettings({ fontSize: Desmos.FontSizes.LARGE });
+
+calculator.updateSettings({ fontSize: 11 });
+
+<!-- Include Spanish translations -->
+<script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6&lang=es"></script>
+
+<!-- Include Spanish and French translations -->
+<script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6&lang=es,fr"></script>
+
+<!-- Include all available translations -->
+<script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6&lang=all"></script>
+// Inspect available languages
+Desmos.supportedLanguages; // ['es', 'fr']
+
+// Set a calculator instance to French
+calculator.updateSettings({ language: 'fr' });
+
+function imageUploadCallback(file, cb) {
+  Desmos.imageFileToDataURL(file, function(err, dataURL) {
+    if (err) {
+      cb(err);
+      return;
+    }
+
+    // Send the data to your server, and arrange for your server to
+    // respond with a URL
+    $.post('https://example.com/serialize-image', { imageData: dataURL }).then(
+      function(msg) {
+        cb(null, msg.url);
+      }, // Success, call the callback with a URL
+      function() {
+        cb(true);
+      } // Indicate that an error has occurred
+    );
+  });
+}
+
+Desmos.GraphingCalculator(elt, { imageUploadCallback: imageUploadCallback });
+
+// All features enabled
+Desmos.enabledFeatures ===
+  {
+    GraphingCalculator: true,
+    FourFunctionCalculator: true,
+    ScientificCalculator: true
+  };
+
+// Only graphing calculator enabled
+Desmos.enabledFeatures ===
+  {
+    GraphingCalculator: true,
+    FourFunctionCalculator: false,
+    ScientificCalculator: false
+  };
+
+var elt1 = document.getElementById('four-function-calculator');
+var calculator1 = Desmos.FourFunctionCalculator(elt1);
+
+var elt2 = document.getElementById('scientific-calculator');
+var calculator2 = Desmos.ScientificCalculator(elt2);
+
